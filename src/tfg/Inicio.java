@@ -23,6 +23,7 @@ public class Inicio extends javax.swing.JFrame {
     Ligas panelLigas = new Ligas();
     Competiciones panelCompeticiones = new Competiciones();
     Equipos panelEquipos = new Equipos();
+    Jugadores panelJugadores = new Jugadores();
     Principal panelPrincipal = new Principal();
     JScrollPane scrollpane;
     Component uno;
@@ -73,6 +74,7 @@ public class Inicio extends javax.swing.JFrame {
         jButton_Ligas = new javax.swing.JButton();
         jButton_Competiciones = new javax.swing.JButton();
         jButton_Equipos = new javax.swing.JButton();
+        jButton_Jugadores = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -125,6 +127,14 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
+        jButton_Jugadores.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jButton_Jugadores.setText("Jugadores");
+        jButton_Jugadores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_JugadoresActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -140,7 +150,9 @@ public class Inicio extends javax.swing.JFrame {
                 .addComponent(jButton_Competiciones)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton_Equipos)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton_Jugadores)
+                .addContainerGap(40, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,7 +163,8 @@ public class Inicio extends javax.swing.JFrame {
                         .addComponent(jButton_Temporadas)
                         .addComponent(jButton_Ligas)
                         .addComponent(jButton_Competiciones)
-                        .addComponent(jButton_Equipos))
+                        .addComponent(jButton_Equipos)
+                        .addComponent(jButton_Jugadores))
                     .addComponent(jButton_Inicio))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -195,13 +208,6 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_InicioActionPerformed
 
     private void jButton_TemporadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_TemporadasActionPerformed
-        /*JDialog ventana = new JDialog();
-        ventana.setTitle("Nueva temporada");
-        ventana.setSize(new Dimension(1000, 700));
-        ventana.setLocationRelativeTo(null);
-        ventana.setModal(true);
-        ventana.add(panelTemporadas);
-        ventana.setVisible(true);*/
         getContentPane().remove(jPanel2);
         java.awt.GridBagConstraints gridBagConstraints;
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -245,6 +251,17 @@ public class Inicio extends javax.swing.JFrame {
         scrollpane.setViewportView(panelEquipos);
     }//GEN-LAST:event_jButton_EquiposActionPerformed
 
+    private void jButton_JugadoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_JugadoresActionPerformed
+        getContentPane().remove(jPanel2);
+        java.awt.GridBagConstraints gridBagConstraints;
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.weighty = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        scrollpane.setViewportView(panelJugadores);
+    }//GEN-LAST:event_jButton_JugadoresActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -284,6 +301,7 @@ public class Inicio extends javax.swing.JFrame {
     private javax.swing.JButton jButton_Competiciones;
     private javax.swing.JButton jButton_Equipos;
     private javax.swing.JButton jButton_Inicio;
+    private javax.swing.JButton jButton_Jugadores;
     private javax.swing.JButton jButton_Ligas;
     private javax.swing.JButton jButton_Temporadas;
     private javax.swing.JPanel jPanel1;

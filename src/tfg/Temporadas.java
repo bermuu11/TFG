@@ -5,6 +5,21 @@
 package tfg;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
+
+import misqlhsqldb.MiSQLhSQLDB;
+import tfg.Alta.Alta_Temporada;
+import static tfg.BaseDeDatos.conectarBD;
 
 /**
  *
@@ -12,12 +27,56 @@ import java.awt.Color;
  */
 public class Temporadas extends javax.swing.JPanel {
 
-    /**
-     * Creates new form Panel1
-     */
+    private class miTablaModel extends DefaultTableModel{
+        public boolean isCellEditable (int row, int column){
+            return false;
+        }
+    }
+    
+    ArrayList datos = null;
+    
+    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
+    
+    int id = -1;
+    int anio = -1;
+    
     public Temporadas() {
         initComponents();
+        conectarBD();
+        cargarTabla();
+        estiloJLabel();
         establecerDiseño();
+        jButton_Eliminar.setEnabled(false);
+    }
+    
+    public void estiloJLabel(){
+        jLabel_Temporadas.setFont(new Font("Verdana", 0, 50));
+        jLabel_Temporadas.setOpaque(true);
+        jLabel_Temporadas.setBackground(Color.yellow);
+    }
+    
+    public void cargarTabla(){
+        String[] registro = null;
+        
+        miTablaModel dtm = new miTablaModel();
+        dtm.addColumn("ID");
+        dtm.addColumn("Año");
+                
+        datos = bbdd.ConsultaSQL("SELECT idTemporada, anio FROM temporada");
+        
+        if(datos != null){
+            int n = datos.size();
+            for(int i = 0; i < n; i++){
+                registro = (String[]) datos.get(i);
+                Object[] fila = new Object[]{
+                    registro[0],
+                    registro[1]
+                };
+                dtm.addRow(fila); 
+            }
+        }
+        
+        jTable_Temporadas.setModel(dtm);
     }
     
     public void establecerDiseño(){
@@ -37,37 +96,87 @@ public class Temporadas extends javax.swing.JPanel {
     private void initComponents() {
 
         jButton_Crear = new javax.swing.JButton();
-        jLabel_Titulo = new javax.swing.JLabel();
-        jComboBox_Temporadas = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
-        jButton_Continuar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable_Temporadas = new javax.swing.JTable();
+        jLabel_Temporadas = new javax.swing.JLabel();
+        jButton_Eliminar = new javax.swing.JButton();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton_Crear.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Crear.setText("CREAR UNA NUEVA");
-        add(jButton_Crear, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 580, -1, -1));
+        jButton_Crear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_CrearActionPerformed(evt);
+            }
+        });
+        add(jButton_Crear, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 530, -1, -1));
 
-        jLabel_Titulo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo_nueva_temporada_1.PNG"))); // NOI18N
-        add(jLabel_Titulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 730, 340));
+        jTable_Temporadas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jTable_Temporadas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable_TemporadasMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTable_Temporadas);
 
-        jComboBox_Temporadas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        add(jComboBox_Temporadas, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 420, -1, -1));
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, -1, -1));
 
-        jLabel2.setText("Cargar temporadas base de datos");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 400, -1, -1));
+        jLabel_Temporadas.setBackground(new java.awt.Color(255, 255, 51));
+        jLabel_Temporadas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel_Temporadas.setText("Temporadas");
+        jLabel_Temporadas.setMaximumSize(new java.awt.Dimension(2300, 300));
+        add(jLabel_Temporadas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-        jButton_Continuar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
-        jButton_Continuar.setText("CONTINUAR");
-        add(jButton_Continuar, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 410, -1, -1));
+        jButton_Eliminar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Eliminar.setText("ELIMINAR");
+        jButton_Eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EliminarActionPerformed(evt);
+            }
+        });
+        add(jButton_Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 530, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
+        Alta_Temporada ventana =  new Alta_Temporada ((JFrame) this.getRootPane().getParent(), true);
+        ventana.setTitle("Nueva temporada");
+        ventana.setSize(new Dimension(500, 300));
+        ventana.setLocationRelativeTo(null);
+        ventana.setModal(true);
+        ventana.setVisible(true);
+        cargarTabla();
+    }//GEN-LAST:event_jButton_CrearActionPerformed
+
+    private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
+        String[] registro = (String[]) datos.get(jTable_Temporadas.getSelectedRow());
+        id = Integer.parseInt(registro[0]);
+        datos = bbdd.ConsultaSQL("DELETE FROM temporada WHERE idTemporada = '" +id +"'");
+        cargarTabla();
+    }//GEN-LAST:event_jButton_EliminarActionPerformed
+
+    private void jTable_TemporadasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_TemporadasMouseClicked
+        if(evt.getClickCount()==1){
+            jButton_Eliminar.setEnabled(true);
+        }
+    }//GEN-LAST:event_jTable_TemporadasMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton_Continuar;
     private javax.swing.JButton jButton_Crear;
-    private javax.swing.JComboBox<String> jComboBox_Temporadas;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel_Titulo;
+    private javax.swing.JButton jButton_Eliminar;
+    private javax.swing.JLabel jLabel_Temporadas;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable_Temporadas;
     // End of variables declaration//GEN-END:variables
 }

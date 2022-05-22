@@ -5,26 +5,109 @@
 package tfg;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
-/**
- *
- * @author Antonio
- */
-public class Equipos extends javax.swing.JPanel {
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-    /**
-     * Creates new form Equipos
-     */
+import misqlhsqldb.MiSQLhSQLDB;
+
+import java.util.ArrayList;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import tfg.Alta.Alta_Equipo;
+
+import static tfg.BaseDeDatos.conectarBD;
+import static tfg.BaseDeDatos.desconectarBD;
+import javax.swing.table.DefaultTableModel;
+import tfg.InfoModificar.InfoModificar_Equipo;
+
+public class Equipos extends javax.swing.JPanel {
+    private class miTablaModel extends DefaultTableModel{
+        public boolean isCellEditable (int row, int column){
+            return false;
+        }
+    }
+    
+    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
+    
+    ArrayList datos = null;
+    
+    int id = -1;
+    String nombre = "";
+    String estadio = "";
+    String ciudad = "";
+    int anioFundacion = -1;
+    String entrenador = "";
+    String presidente = "";
+    
     public Equipos() {
         initComponents();
+        conectarBD();
         estiloJLabel();
+        cargarTabla();
+        jButton_InfoModificar.setEnabled(false);
+        jButton_Eliminar.setEnabled(false);
     }
     
     public void estiloJLabel(){
         jLabel_Equipos.setFont(new Font("Verdana", 0, 50));
         jLabel_Equipos.setOpaque(true);
         jLabel_Equipos.setBackground(Color.yellow);
+    }
+    
+    public void cargarTabla(){
+        String[] registro = null;
+        
+        miTablaModel dtm = new miTablaModel();
+        dtm.addColumn("ID");
+        dtm.addColumn("Nombre");
+        dtm.addColumn("Estadio");
+        dtm.addColumn("Año fundación");
+        dtm.addColumn("Ciudad");
+        dtm.addColumn("Entrenador");
+        dtm.addColumn("Presidente");
+                
+        datos = bbdd.ConsultaSQL("SELECT idEquipo, nombre, estadio, anioFundacion, ciudad, entrenador, presidente\n" +
+        "FROM equipo");
+        
+        if(datos != null){
+            int n = datos.size();
+            for(int i = 0; i < n; i++){
+                registro = (String[]) datos.get(i);
+                Object[] fila = new Object[]{
+                    registro[0],
+                    registro[1],
+                    registro[2],
+                    registro[3],
+                    registro[4],
+                    registro[5],
+                    registro[6]
+                };
+                dtm.addRow(fila); 
+            }
+        }
+        
+        jTable_Equipos.setModel(dtm);
+    }
+    
+    private void masInformacion(){
+        String[] registro = (String[]) datos.get(jTable_Equipos.getSelectedRow());
+        id = Integer.parseInt(registro[0]);
+        
+        InfoModificar_Equipo ventana =  new InfoModificar_Equipo((JFrame) this.getRootPane().getParent(), true, id);
+        ventana.setTitle("Información equipo");
+        ventana.setSize(new Dimension(1000, 700));
+        ventana.setLocationRelativeTo(null);
+        ventana.setModal(true);
+        ventana.setVisible(true);
+        cargarTabla();
     }
 
     /**
@@ -38,14 +121,17 @@ public class Equipos extends javax.swing.JPanel {
 
         jLabel_Equipos = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1_Equipos = new javax.swing.JTable();
+        jTable_Equipos = new javax.swing.JTable();
+        jButton_Crear = new javax.swing.JButton();
+        jButton_InfoModificar = new javax.swing.JButton();
+        jButton_Eliminar = new javax.swing.JButton();
 
         jLabel_Equipos.setBackground(new java.awt.Color(255, 255, 51));
         jLabel_Equipos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel_Equipos.setText("Equipos");
         jLabel_Equipos.setMaximumSize(new java.awt.Dimension(2300, 300));
 
-        jTable1_Equipos.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_Equipos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -56,21 +142,53 @@ public class Equipos extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1_Equipos);
+        jTable_Equipos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable_EquiposMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTable_Equipos);
+
+        jButton_Crear.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Crear.setText("CREAR NUEVO");
+        jButton_Crear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_CrearActionPerformed(evt);
+            }
+        });
+
+        jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_InfoModificar.setText("MÁS INFORMACIÓN");
+        jButton_InfoModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_InfoModificarActionPerformed(evt);
+            }
+        });
+
+        jButton_Eliminar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Eliminar.setText("ELIMINAR");
+        jButton_Eliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel_Equipos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel_Equipos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(106, 106, 106)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(199, Short.MAX_VALUE))
+                        .addComponent(jButton_Crear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton_InfoModificar)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton_Eliminar)))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -79,14 +197,53 @@ public class Equipos extends javax.swing.JPanel {
                 .addComponent(jLabel_Equipos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(111, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton_Crear)
+                    .addComponent(jButton_InfoModificar)
+                    .addComponent(jButton_Eliminar))
+                .addContainerGap(71, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
+        Alta_Equipo ventana =  new Alta_Equipo((JFrame) this.getRootPane().getParent(), true);
+        ventana.setTitle("Nuevo equipo");
+        ventana.setSize(new Dimension(700, 500));
+        ventana.setLocationRelativeTo(null);
+        ventana.setModal(true);
+        ventana.setVisible(true);
+        cargarTabla();
+    }//GEN-LAST:event_jButton_CrearActionPerformed
+
+    private void jTable_EquiposMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_EquiposMouseClicked
+        if(evt.getClickCount()==1){
+            jButton_InfoModificar.setEnabled(true);
+            jButton_Eliminar.setEnabled(true);
+        }
+        if(evt.getClickCount()==2){
+            masInformacion();
+        }
+    }//GEN-LAST:event_jTable_EquiposMouseClicked
+
+    private void jButton_InfoModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InfoModificarActionPerformed
+        masInformacion();
+    }//GEN-LAST:event_jButton_InfoModificarActionPerformed
+
+    private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
+        String[] registro = (String[]) datos.get(jTable_Equipos.getSelectedRow());
+        id = Integer.parseInt(registro[0]);
+        datos = bbdd.ConsultaSQL("DELETE FROM equipo WHERE idEquipo = '" +id +"'");
+        cargarTabla();
+    }//GEN-LAST:event_jButton_EliminarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton_Crear;
+    private javax.swing.JButton jButton_Eliminar;
+    private javax.swing.JButton jButton_InfoModificar;
     private javax.swing.JLabel jLabel_Equipos;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1_Equipos;
+    private javax.swing.JTable jTable_Equipos;
     // End of variables declaration//GEN-END:variables
 }

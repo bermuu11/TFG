@@ -7,21 +7,27 @@ package tfg;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import misqlhsqldb.MiSQLhSQLDB;
+
+import static tfg.BaseDeDatos.conectarBD;
 
 /**
  *
  * @author abc
  */
 public class Principal extends javax.swing.JPanel {
-
-    /**
-     * Creates new form NewJPanel
-     */
+    
+    ArrayList datos = null;
+    
+    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
+    
     private class miTablaModel extends DefaultTableModel{
         public boolean isCellEditable (int row, int column){
             return false;
@@ -30,9 +36,12 @@ public class Principal extends javax.swing.JPanel {
     
     public Principal() {
         initComponents();
+        conectarBD();
         estiloJLabel();
         cargarTablaClasificacion();
         cargarTablaResultados();
+        cargarTemporadas();
+        cargarLigas();
     }
     
     public void estiloJLabel(){
@@ -116,6 +125,36 @@ public class Principal extends javax.swing.JPanel {
             jTable_Resultados.getColumnModel().getColumn(i).setCellRenderer(alinear);
         }
     }
+    
+    public void cargarTemporadas(){
+        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+        String[] registro = null;
+        datos = bbdd.ConsultaSQL("SELECT anio FROM temporada");
+        
+        if(datos != null){
+            int n = datos.size();
+            for(int i=0; i<n; i++){
+                registro = (String[]) datos.get(i);
+                dcbm.addElement(registro[0]);
+            }
+        }
+        jComboBox_Temporadas.setModel(dcbm);
+    }
+    
+    public void cargarLigas(){
+        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+        String[] registro = null;
+        datos = bbdd.ConsultaSQL("SELECT nombre FROM liga");
+        
+        if(datos != null){
+            int n = datos.size();
+            for(int i=0; i<n; i++){
+                registro = (String[]) datos.get(i);
+                dcbm.addElement(registro[0]);
+            }
+        }
+        jComboBox_Ligas.setModel(dcbm);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -128,6 +167,10 @@ public class Principal extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
+        jComboBox_Temporadas = new javax.swing.JComboBox<>();
+        jComboBox_Ligas = new javax.swing.JComboBox<>();
+        jLabel_Temporadas = new javax.swing.JLabel();
+        jLabel_Ligas = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jButton_Anterior = new javax.swing.JButton();
@@ -146,15 +189,41 @@ public class Principal extends javax.swing.JPanel {
 
         jPanel1.setMinimumSize(new java.awt.Dimension(100, 60));
 
+        jComboBox_Temporadas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jComboBox_Ligas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel_Temporadas.setText("Temporadas");
+
+        jLabel_Ligas.setText("Ligas");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 262, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(54, 54, 54)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jComboBox_Temporadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel_Temporadas))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jComboBox_Ligas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel_Ligas))
+                .addGap(55, 55, 55))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 60, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel_Temporadas)
+                    .addComponent(jLabel_Ligas))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox_Temporadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox_Ligas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -279,7 +348,11 @@ public class Principal extends javax.swing.JPanel {
     private javax.swing.JButton jButton_Anterior;
     private javax.swing.JButton jButton_Siguiente;
     private javax.swing.JComboBox<String> jComboBox_Jornadas;
+    private javax.swing.JComboBox<String> jComboBox_Ligas;
+    private javax.swing.JComboBox<String> jComboBox_Temporadas;
     private javax.swing.JLabel jLabel_Clasificacion;
+    private javax.swing.JLabel jLabel_Ligas;
+    private javax.swing.JLabel jLabel_Temporadas;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
