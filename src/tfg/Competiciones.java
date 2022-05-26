@@ -19,6 +19,7 @@ import javax.swing.table.DefaultTableModel;
 import misqlhsqldb.MiSQLhSQLDB;
 import tfg.Alta.Alta_Competicion;
 import static tfg.BaseDeDatos.conectarBD;
+import tfg.InfoModificar.InfoModificar_Competicion;
 
 /**
  *
@@ -79,6 +80,19 @@ public class Competiciones extends javax.swing.JPanel {
         jLabel_Competiciones.setOpaque(true);
         jLabel_Competiciones.setBackground(Color.yellow);
     }
+    
+    private void masInformacion(){
+        String[] registro = (String[]) datos.get(jTable_Competiciones.getSelectedRow());
+        id = Integer.parseInt(registro[0]);
+        
+        InfoModificar_Competicion ventana =  new InfoModificar_Competicion((JFrame) this.getRootPane().getParent(), true, id);
+        ventana.setTitle("Información competición");
+        ventana.setSize(new Dimension(1000, 700));
+        ventana.setLocationRelativeTo(null);
+        ventana.setModal(true);
+        ventana.setVisible(true);
+        cargarTabla();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -94,6 +108,7 @@ public class Competiciones extends javax.swing.JPanel {
         jLabel_Competiciones = new javax.swing.JLabel();
         jButton_Crear = new javax.swing.JButton();
         jButton_Eliminar = new javax.swing.JButton();
+        jButton_InfoModificar = new javax.swing.JButton();
 
         jTable_Competiciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -134,6 +149,14 @@ public class Competiciones extends javax.swing.JPanel {
             }
         });
 
+        jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_InfoModificar.setText("INFO/MODIFICAR");
+        jButton_InfoModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_InfoModificarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -147,11 +170,13 @@ public class Competiciones extends javax.swing.JPanel {
                         .addGap(26, 26, 26)
                         .addComponent(jButton_Crear)
                         .addGap(18, 18, 18)
+                        .addComponent(jButton_InfoModificar)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton_Eliminar))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(75, 75, 75)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(415, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,7 +187,8 @@ public class Competiciones extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Crear)
-                    .addComponent(jButton_Eliminar))
+                    .addComponent(jButton_Eliminar)
+                    .addComponent(jButton_InfoModificar))
                 .addContainerGap(44, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -190,10 +216,15 @@ public class Competiciones extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTable_CompeticionesMouseClicked
 
+    private void jButton_InfoModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InfoModificarActionPerformed
+        masInformacion();
+    }//GEN-LAST:event_jButton_InfoModificarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Crear;
     private javax.swing.JButton jButton_Eliminar;
+    private javax.swing.JButton jButton_InfoModificar;
     private javax.swing.JLabel jLabel_Competiciones;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Competiciones;

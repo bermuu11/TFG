@@ -16,10 +16,18 @@ import misqlhsqldb.MiSQLhSQLDB;
  * @author Antonio
  */
 public class BaseDeDatos {
-    static Connection conexion = null;
+    private static Connection conexion = null;
+    private static MiSQLhSQLDB bbdd = null;
+    
+    public static MiSQLhSQLDB getBD(){
+        if(bbdd == null){
+            bbdd = new MiSQLhSQLDB("SA", "SA");
+        }
+        return bbdd;
+    }
     
     public static void conectarBD(){
-        if(conexion == null){
+        /*if(conexion == null){
             try {
              Class.forName("org.hsqldb.jdbcDriver");
              conexion = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost", "SA", "SA");
@@ -28,7 +36,7 @@ public class BaseDeDatos {
             } catch (SQLException ex) {
                 Logger.getLogger(Equipos.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }*/
     }
     
     public static void desconectarBD() throws SQLException{

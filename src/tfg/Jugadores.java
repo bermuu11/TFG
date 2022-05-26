@@ -151,7 +151,7 @@ public class Jugadores extends javax.swing.JPanel {
         });
 
         jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
-        jButton_InfoModificar.setText("MÁS INFORMACIÓN");
+        jButton_InfoModificar.setText("INFO/MODIFICAR");
         jButton_InfoModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_InfoModificarActionPerformed(evt);

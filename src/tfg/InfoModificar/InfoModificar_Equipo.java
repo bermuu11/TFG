@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import misqlhsqldb.MiSQLhSQLDB;
 import tfg.InfoModificar.InfoModificar_Jugador;
@@ -38,8 +39,10 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     boolean modificar = false;
     int idEquipo;
     int idCompeticion;
+    int idJugador;
     ArrayList datos = null;
     ArrayList datosCompeticion = null;
+    ArrayList datosJugador = null;
     
     public InfoModificar_Equipo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -50,13 +53,17 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.idEquipo = idEquipo;
-        this.setTitle("hola " +idEquipo);
         modificar();
-        cargarTabla();
         cargarDatos();
         cargarCompeticiones();
+        cargarTabla(idCompeticion, idEquipo);
+        if(idCompeticion != -1){
+            jComboBox_Competicion.setSelectedIndex(jComboBox_Competicion.getItemCount() - 1);
+            jButton_Cancelar.setVisible(false);
+        } else {
+            jButton_AnadirJugador.setEnabled(false);
+        }
         jButton_EliminarJugador.setEnabled(false);
-        jButton_Cancelar.setVisible(false);
     }
     
     public void modificar(){
@@ -97,7 +104,7 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     public void cargarCompeticiones(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosCompeticion = bbdd.ConsultaSQL("SELECT idCompeticion, nombre FROM competicion");
+        datosCompeticion = bbdd.ConsultaSQL("SELECT idCompeticion, nombre FROM competicion C, compite CE WHERE (CE.idCompeticion = C.idCompeticion) AND (CE.idEquipo = " +idEquipo +");");
         
         if(datosCompeticion != null){
             int n = datosCompeticion.size();
@@ -107,9 +114,14 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
             }
         }
         jComboBox_Competicion.setModel(dcbm);
+        if(datosCompeticion.size() > 0){
+            idCompeticion = Integer.parseInt(registro[0]); //identificador de la ultima competicion leida
+        } else {
+            idCompeticion = -1;
+        }
     }
     
-    public void cargarTabla(){
+    public void cargarTabla(int idCompeticion, int idEquipo){
         String[] registro = null;
         
         miTablaModel dtm = new miTablaModel();
@@ -118,24 +130,27 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         dtm.addColumn("Fecha de nacimiento");
         dtm.addColumn("Posición");
         dtm.addColumn("País");
+        dtm.addColumn("Fecha traspaso");
         
-        datos = bbdd.ConsultaSQL("SELECT J.nombre, J.apellido1, J.fechaNacimiento, J.posicion, J.pais FROM jugador J, pertenece P WHERE (P.idJugador = J.idJugador) AND (P.idEquipo = " +idEquipo +") AND (P.idCompeticion = " +idCompeticion +");");
-        
-        if(datos != null){
-            int n = datos.size();
-            for(int i = 0; i < n; i++){
-                registro = (String[]) datos.get(i);
-                Object[] fila = new Object[]{
-                    registro[0],
-                    registro[1],
-                    registro[2],
-                    registro[3],
-                    registro[4]
-                };
-                dtm.addRow(fila); 
+        if(idCompeticion != -1){
+            datosJugador = bbdd.ConsultaSQL("SELECT J.idJugador, J.nombre, J.apellido1, J.apellido2, J.fechaNacimiento, J.posicion, J.pais, P.fechaTraspaso FROM jugador J, pertenece P WHERE (P.idJugador = J.idJugador) AND (P.idEquipo = " +idEquipo +") AND (P.idCompeticion = " +idCompeticion +");");
+
+            if(datosJugador != null){
+                int n = datosJugador.size();
+                for(int i = 0; i < n; i++){
+                    registro = (String[]) datosJugador.get(i);
+                    Object[] fila = new Object[]{
+                        registro[1],
+                        registro[2] +" " +registro[3],
+                        registro[4],
+                        registro[5],
+                        registro[6],
+                        registro[7]
+                    };
+                    dtm.addRow(fila); 
+                }
             }
         }
-        
         jTable_Jugadores.setModel(dtm);
     }
 
@@ -227,6 +242,11 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         });
 
         jButton_EliminarJugador.setText("ELIMINAR JUGADOR");
+        jButton_EliminarJugador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EliminarJugadorActionPerformed(evt);
+            }
+        });
 
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -236,6 +256,11 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         });
 
         jComboBox_Competicion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox_Competicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox_CompeticionActionPerformed(evt);
+            }
+        });
 
         jLabel_Competicion.setText("Competicion");
 
@@ -376,13 +401,26 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
-        cargarTabla();
+        cargarTabla(idCompeticion, idEquipo);
     }//GEN-LAST:event_jButton_AnadirJugadorActionPerformed
 
     private void jButton_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelarActionPerformed
         modificar = false;
         modificar();
     }//GEN-LAST:event_jButton_CancelarActionPerformed
+
+    private void jButton_EliminarJugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarJugadorActionPerformed
+        String[] registro = (String[]) datosJugador.get(jTable_Jugadores.getSelectedRow());
+        idJugador = Integer.parseInt(registro[0]);
+        bbdd.ConsultaSQL("DELETE FROM pertenece WHERE (idJugador = '" +idJugador +"') AND (idCompeticion = " +idCompeticion +") AND (idEquipo = " +idEquipo +");");
+        cargarTabla(idCompeticion, idEquipo);
+    }//GEN-LAST:event_jButton_EliminarJugadorActionPerformed
+
+    private void jComboBox_CompeticionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_CompeticionActionPerformed
+        String[] registro = (String[]) datosCompeticion.get(jComboBox_Competicion.getSelectedIndex());
+        idCompeticion = Integer.parseInt(registro[0]);
+        cargarTabla(idCompeticion, idEquipo);
+    }//GEN-LAST:event_jComboBox_CompeticionActionPerformed
 
     /**
      * @param args the command line arguments

@@ -4,7 +4,10 @@
  */
 package tfg.Alta;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
 import misqlhsqldb.MiSQLhSQLDB;
 
@@ -18,7 +21,11 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
     
     int idCompeticion = -1;
     int idEquipo = -1;
+    String fechaTraspaso;
+    
     ArrayList datos = null;
+    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
     
     public Alta_JugadorEquipo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -61,6 +68,8 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
         jLabel_Jugadores = new javax.swing.JLabel();
         jButton_Anadir = new javax.swing.JButton();
         jButton_Cancelar = new javax.swing.JButton();
+        jLabel_FechaTraspaso = new javax.swing.JLabel();
+        jTextField_FechaTraspaso = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -76,32 +85,47 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
         });
 
         jButton_Cancelar.setText("CANCELAR");
+        jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_CancelarActionPerformed(evt);
+            }
+        });
+
+        jLabel_FechaTraspaso.setText("Fecha de incorporación");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(208, 208, 208)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton_Cancelar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton_Anadir)
+                .addGap(18, 18, 18))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(44, 44, 44)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel_Jugadores)
                     .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(235, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Anadir)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 154, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel_FechaTraspaso)
+                    .addComponent(jTextField_FechaTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(134, 134, 134))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(85, 85, 85)
-                .addComponent(jLabel_Jugadores)
+                .addGap(80, 80, 80)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel_Jugadores)
+                    .addComponent(jLabel_FechaTraspaso))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_FechaTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 143, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Anadir)
                     .addComponent(jButton_Cancelar))
@@ -112,10 +136,21 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
+        try {
+            Date fecha = formato.parse(jTextField_FechaTraspaso.getText());
+            fechaTraspaso = formatoBD.format(fecha);
+        } catch (ParseException ex) {
+            //Logger.getLogger(Alta_Jugador.class.getName()).log(Level.SEVERE, null, ex);
+        }
         String[] registro = (String[]) datos.get(jComboBox_Jugadores.getSelectedIndex());
         int idJugador = Integer.parseInt(registro[0]);
-        bbdd.ConsultaSQL("INSERT INTO pertenece VALUES ("+idJugador +", " +idEquipo +", " +idCompeticion +", '2022-07-01');");
+        bbdd.ConsultaSQL("INSERT INTO pertenece VALUES ("+idJugador +", " +idEquipo +", " +idCompeticion +", '" +fechaTraspaso +"');");
+        this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
+
+    private void jButton_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelarActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton_CancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -163,6 +198,8 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
     private javax.swing.JButton jButton_Anadir;
     private javax.swing.JButton jButton_Cancelar;
     private javax.swing.JComboBox<String> jComboBox_Jugadores;
+    private javax.swing.JLabel jLabel_FechaTraspaso;
     private javax.swing.JLabel jLabel_Jugadores;
+    private javax.swing.JTextField jTextField_FechaTraspaso;
     // End of variables declaration//GEN-END:variables
 }
