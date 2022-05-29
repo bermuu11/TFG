@@ -4,8 +4,6 @@
  */
 package tfg.Alta;
 
-import tfg.Clasificacion;
-
 import java.awt.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,8 +14,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import misqlhsqldb.MiSQLhSQLDB;
-
+import tfg.BaseDeDatos;
+import tfg.Clasificacion;
         
 /**
  *
@@ -25,15 +23,19 @@ import misqlhsqldb.MiSQLhSQLDB;
  */
 public class Alta_Jornada extends javax.swing.JDialog {
     
-    private final int maximoPartidos = 15;
+    private static final int MAX_PARTIDOS = 15;
+
+    private static final SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat formatoHora = new SimpleDateFormat("hh:mm");
+    private static final SimpleDateFormat formatoHoraBD = new SimpleDateFormat("hh:mm:ss");
+    
     private HashMap mapaComponentes;
     
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-    SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
-    SimpleDateFormat formatoHora = new SimpleDateFormat("hh:mm");
-    
     ArrayList equipos = null;
+    int totalEquipos;
+    int totalPartidos;
+    
     int idCompeticion;
     
     public Alta_Jornada(java.awt.Frame parent, boolean modal) {
@@ -51,89 +53,82 @@ public class Alta_Jornada extends javax.swing.JDialog {
         ocultarPartidos();
     }
     
-    public void crearMapaComponentes(){
-    mapaComponentes = new HashMap<String,Component>();
+    //Crea una tabla hash en la que se asocian los componentes con cadenas que los identifican
+    public void crearMapaComponentes() {
+        mapaComponentes = new HashMap<String, Component>();
         Component[] componentes = getContentPane().getComponents();
-        for(int i=0; i < componentes.length; i++){
-            mapaComponentes.put(componentes[i].getName(), componentes[i]);
+        for (Component componente : componentes) {
+            mapaComponentes.put(componente.getName(), componente);
         }
     }
 
-    public Component getComponentePorNombre(String nombre){
-        if (mapaComponentes.containsKey(nombre)){
+    //Obtiene de la tabla hash un componente a partir de su identificador
+    public Component getComponentePorNombre(String nombre) {
+        if (mapaComponentes.containsKey(nombre)) {
             return (Component) mapaComponentes.get(nombre);
         }
         return null;
     }
 
-    public void cargarEquipos(){
-        String[] registro = null;
-        equipos = bbdd.ConsultaSQL("SELECT E.idEquipo, E.nombre FROM compite C, equipo E WHERE (C.idCompeticion = " +idCompeticion +") AND (C.idEquipo = E.idEquipo);");
-        
-        if(equipos != null){
-            int n = equipos.size();
-            JComboBox combo;
-            boolean local = true;
-            int numPartido=0;
-            for(int i=0; i<n; i++){
-                DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
-                for(int j=0; j<n; j++){
-                    registro = (String[]) equipos.get(j);
-                    dcbm.addElement(registro[1]);
-                }
-                // Obtiene el componente al que asignar el modelo creado
-                String nombre;
-                if(local){
-                    nombre = "EL" + numPartido;
-                }
-                else{
-                    nombre = "EV" + numPartido;
-                    // Pasa al siguiente partido
-                    numPartido++;
-                }
-                combo = (JComboBox) getComponentePorNombre(nombre);
-                // Asigna el modelo
-                if(combo != null){
-                    combo.setModel(dcbm);
-                }
-                // Pasa de local a visitante y viceversa
-                local = !local;
-            }
-        }
-    }
-    
-    public void cargarEstados(){
-        int n = equipos.size() / 2; // el número de partidos es la mitad de los equipos
-        int numPartido=0;
-        for(int i=0; i<n; i++){
-            DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+    public void cargarEquipos() {
+        equipos = BaseDeDatos.getBD().ConsultaSQL("SELECT E.idEquipo, E.nombre FROM compite C, equipo E WHERE (C.idCompeticion = " + idCompeticion + ") AND (C.idEquipo = E.idEquipo);");
+        totalEquipos = equipos.size();
+        totalPartidos = totalEquipos / 2; //el número de partidos es la mitad que el de equipos
 
-            dcbm.addElement("Sin comenzar");
-            dcbm.addElement("Finalizado");
-            dcbm.addElement("Suspendido");
-            dcbm.addElement("Aplazado");
-        
-            // Obtiene el componente al que asignar el modelo creado
-            JComboBox combo = (JComboBox) getComponentePorNombre("ES" + numPartido);
-            // Asigna el modelo
-            if(combo != null){
-                combo.setModel(dcbm);
+        if (equipos != null) {
+            //Crea una lista de todos los equipos
+            ArrayList<String> listaEquipos = new ArrayList<>();
+            for (int i = 0; i < totalEquipos; i++) {
+                String[] registro = (String[]) equipos.get(i);
+                listaEquipos.add(registro[1]);
             }
-            // Pasa al siguiente partido
-            numPartido++;
+
+            //Rellena los combos del equipo local y visitante de los partidos
+            for (int i = 0; i < totalPartidos; i++) {
+                //Obtiene el componente asociado al equipo local del partido actual
+                JComboBox combo = (JComboBox) getComponentePorNombre("EL" + i);
+                //Asigna el modelo creado a partir de la lista de equipos
+                if (combo != null) {
+                    combo.setModel(new DefaultComboBoxModel(listaEquipos.toArray()));
+                }
+                //Obtiene el componente asociado al equipo visitante del partido actual
+                combo = (JComboBox) getComponentePorNombre("EV" + i);
+                //Asigna el modelo creado a partir de la lista de equipos
+                if (combo != null) {
+                    combo.setModel(new DefaultComboBoxModel(listaEquipos.toArray()));
+                }
+            }
         }
     }
     
-    public void ocultarPartidos(){
-        int n = equipos.size() / 2;
-        for(int i=n; i<maximoPartidos; i++){
-            ((JTextField) getComponentePorNombre("HO" + i)).setVisible(false);
-            ((JTextField) getComponentePorNombre("FE" + i)).setVisible(false);
-            ((JComboBox) getComponentePorNombre("EL" + i)).setVisible(false);
-            ((JComboBox) getComponentePorNombre("EV" + i)).setVisible(false);
-            ((JTextField) getComponentePorNombre("GL" + i)).setVisible(false);
-            ((JTextField) getComponentePorNombre("GV" + i)).setVisible(false);
-            ((JComboBox) getComponentePorNombre("ES" + i)).setVisible(false);
+    public void cargarEstados() {
+        //Crea una lista con todos los estados
+        ArrayList<String> listaEstados = new ArrayList<>();
+        listaEstados.add("Sin comenzar");
+        listaEstados.add("Finalizado");
+        listaEstados.add("Suspendido");
+        listaEstados.add("Aplazado");
+
+        for (int i = 0; i < totalPartidos; i++) {
+            //Obtiene el componente asociado al estado del partido actual
+            JComboBox combo = (JComboBox) getComponentePorNombre("ES" + i);
+            //Asigna el modelo creado a partir de la lista de estados
+            if (combo != null) {
+                combo.setModel(new DefaultComboBoxModel(listaEstados.toArray()));
+            }
+        }
+    }
+    
+    public void ocultarPartidos() {
+        //Oculta todos los componentes de los partidos que no son necesarios
+        for (int i = totalPartidos; i < MAX_PARTIDOS; i++) {
+            getComponentePorNombre("HO" + i).setVisible(false);
+            getComponentePorNombre("FE" + i).setVisible(false);
+            getComponentePorNombre("EL" + i).setVisible(false);
+            getComponentePorNombre("EV" + i).setVisible(false);
+            getComponentePorNombre("GL" + i).setVisible(false);
+            getComponentePorNombre("GV" + i).setVisible(false);
+            getComponentePorNombre("ES" + i).setVisible(false);
         }
     }
 
@@ -1220,129 +1215,128 @@ public class Alta_Jornada extends javax.swing.JDialog {
 
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
         String[] registro = null;
-        int n = equipos.size() / 2;
-        JComboBox combo;
-        int jornada;
-        String horaPartido;
-        String fechaPartido;
-        int idEquipoLocal;
-        int idEquipoVisitante;
-        String golesLocal;
-        String golesVisitante;
-        String estado;
-        String consulta;
-        boolean esCorrecto = true;
         ArrayList<String> consultas = new ArrayList<>();
-        boolean[] equiposUsados = new boolean[equipos.size()];
-        
-        int numPartido=0;
-        while(numPartido<n && esCorrecto){
-            consulta = "INSERT INTO partido OVERRIDING SYSTEM VALUE VALUES (null," +idCompeticion +",";
-            try{
-                jornada = Integer.parseInt(jTextField_Jornada.getText());
-                consulta += jornada +",";
-            } catch (Exception ex){
-                JOptionPane.showMessageDialog(this, "Debe introducir un número de jornada válido");
+        boolean[] equiposUsados = new boolean[totalEquipos];
+
+        int numPartido = 0;
+        boolean esCorrecto = true;
+        while (numPartido < totalPartidos && esCorrecto) {
+            String consulta = "INSERT INTO partido OVERRIDING SYSTEM VALUE VALUES (null," + idCompeticion + ",";
+            //Obtiene el número de jornada
+            try {
+                int jornada = Integer.parseInt(jTextField_Jornada.getText());
+                consulta += jornada + ",";
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Debe introducir un número de jornada válido.", "Error", JOptionPane.WARNING_MESSAGE);
                 esCorrecto = false;
                 break;
             }
-            horaPartido = ((JTextField) getComponentePorNombre("HO" + numPartido)).getText();
-            if(horaPartido.equals("")){
+
+            //Obtiene la hora del partido
+            String horaPartido = ((JTextField) getComponentePorNombre("HO" + numPartido)).getText();
+            if (horaPartido.equals("")) {
                 consulta += "null,";
             } else {
                 try {
-                    Date hora = formatoHora.parse(((JTextField) getComponentePorNombre("HO" + numPartido)).getText());
-                    horaPartido = formatoHora.format(hora);
+                    Date hora = formatoHora.parse(horaPartido);
+                    horaPartido = formatoHoraBD.format(hora);
                 } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(this, "El formato de la hora introducida en la fila " +(numPartido+1) +" no es correcto. Debe ser 'hh:mm'." );
+                    JOptionPane.showMessageDialog(this, "El formato de la hora introducida en la fila " + (numPartido + 1) + " no es correcto. Debe ser 'hh:mm'.", "Error", JOptionPane.WARNING_MESSAGE);
                     esCorrecto = false;
                     break;
                 }
-                consulta += "'" +horaPartido +"',";
+                consulta += "'" + horaPartido + "',";
             }
-            
-            fechaPartido = ((JTextField) getComponentePorNombre("FE" + numPartido)).getText();
-            if(fechaPartido.equals("")){
+
+            //Obtiene la fecha del partido
+            String fechaPartido = ((JTextField) getComponentePorNombre("FE" + numPartido)).getText();
+            if (fechaPartido.equals("")) {
                 consulta += "null,";
             } else {
                 try {
-                    Date fecha = formato.parse(((JTextField) getComponentePorNombre("FE" + numPartido)).getText());
+                    Date fecha = formato.parse(fechaPartido);
                     fechaPartido = formatoBD.format(fecha);
                 } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(this, "El formato de la fecha introducida en la fila " +(numPartido+1) +" no es correcto. Debe ser 'dd/mm/aaaa'." );
+                    JOptionPane.showMessageDialog(this, "El formato de la fecha introducida en la fila " + (numPartido + 1) + " no es correcto. Debe ser 'dd/mm/aaaa'.", "Error", JOptionPane.WARNING_MESSAGE);
                     esCorrecto = false;
                     break;
                 }
-                consulta += "'" +fechaPartido +"',";
+                consulta += "'" + fechaPartido + "',";
             }
-            
-            //Obtener equipo local seleccionado
-            combo = (JComboBox) getComponentePorNombre("EL" + numPartido);
-            if(equiposUsados[combo.getSelectedIndex()] == true){
-                JOptionPane.showMessageDialog(this, "El equipo local de la fila " +(numPartido+1) +" ya está en uso." );
+
+            //Obtiene el equipo local seleccionado
+            JComboBox combo = (JComboBox) getComponentePorNombre("EL" + numPartido);
+            if (equiposUsados[combo.getSelectedIndex()] == true) {
+                JOptionPane.showMessageDialog(this, "El equipo local de la fila " + (numPartido + 1) + " ya está en uso.", "Error", JOptionPane.WARNING_MESSAGE);
                 esCorrecto = false;
                 break;
-            } else{
+            } else {
                 registro = (String[]) equipos.get(combo.getSelectedIndex());
-                idEquipoLocal = Integer.parseInt(registro[0]);
-                consulta += idEquipoLocal +",";
+                int idEquipoLocal = Integer.parseInt(registro[0]);
+                consulta += idEquipoLocal + ",";
                 equiposUsados[combo.getSelectedIndex()] = true;
             }
-            
-            //Obtener equipo visitante seleccionado
+
+            //Obtiene el equipo visitante seleccionado
             combo = (JComboBox) getComponentePorNombre("EV" + numPartido);
-            if(equiposUsados[combo.getSelectedIndex()] == true){
-                JOptionPane.showMessageDialog(this, "El equipo visitante de la fila " +(numPartido+1) +" ya está en uso." );
+            if (equiposUsados[combo.getSelectedIndex()] == true) {
+                JOptionPane.showMessageDialog(this, "El equipo visitante de la fila " + (numPartido + 1) + " ya está en uso.", "Error", JOptionPane.WARNING_MESSAGE);
                 esCorrecto = false;
                 break;
-            } else{
+            } else {
                 registro = (String[]) equipos.get(combo.getSelectedIndex());
-                idEquipoVisitante = Integer.parseInt(registro[0]);
-                consulta += idEquipoVisitante +",";
+                int idEquipoVisitante = Integer.parseInt(registro[0]);
+                consulta += idEquipoVisitante + ",";
                 equiposUsados[combo.getSelectedIndex()] = true;
             }
-            
-            golesLocal = ((JTextField) getComponentePorNombre("GL" + numPartido)).getText();
-            if(golesLocal.equals("")){
+
+            //Obtiene los goles del equipo local
+            String golesLocal = ((JTextField) getComponentePorNombre("GL" + numPartido)).getText();
+            if (golesLocal.equals("")) {
                 consulta += "null,";
-            } else{
-                try{
-                    consulta += Integer.parseInt(golesLocal) +",";
-                } catch (Exception ex){
-                    JOptionPane.showMessageDialog(this, "El formato de los goles locales en la fila " +(numPartido+1) +" no es correcto." );
+            } else {
+                try {
+                    consulta += Integer.parseInt(golesLocal) + ",";
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "El formato de los goles locales en la fila " + (numPartido + 1) + " no es correcto.", "Error", JOptionPane.WARNING_MESSAGE);
                     esCorrecto = false;
                     break;
                 }
             }
-            
-            golesVisitante = ((JTextField) getComponentePorNombre("GV" + numPartido)).getText();
-            if(golesVisitante.equals("")){
+
+            //Obtiene los goles del equipo visitante
+            String golesVisitante = ((JTextField) getComponentePorNombre("GV" + numPartido)).getText();
+            if (golesVisitante.equals("")) {
                 consulta += "null,";
-            } else{
-                try{
-                    consulta += Integer.parseInt(golesVisitante) +",";
-                } catch (Exception ex){
-                    JOptionPane.showMessageDialog(this, "El formato de los goles visitantes en la fila " +(numPartido+1) +" no es correcto." );
+            } else {
+                try {
+                    consulta += Integer.parseInt(golesVisitante) + ",";
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "El formato de los goles visitantes en la fila " + (numPartido + 1) + " no es correcto.", "Error", JOptionPane.WARNING_MESSAGE);
                     esCorrecto = false;
                     break;
                 }
             }
-            
-            //Obtener estado del partido
+
+            //Obtiene el estado del partido
             combo = (JComboBox) getComponentePorNombre("ES" + numPartido);
-            estado = combo.getSelectedItem().toString();
-            consulta += "'" +estado +"')";
-                        
+            String estado = combo.getSelectedItem().toString();
+            consulta += "'" + estado + "')";
+
             consultas.add(consulta);
-            
+
             //Pasa al siguiente partido
             numPartido++;
         }
-        
-        if(esCorrecto){
-            for(String sql: consultas){
-                bbdd.ConsultaSQL(sql);
+
+        if (esCorrecto) {
+            //Se ejecutan las consultas que insertan los partidos de la jornada
+            for (String sql : consultas) {
+                BaseDeDatos.getBD().ConsultaSQL(sql);
             }
+
+            //Se genera la clasificación actualizada
+            Clasificacion.generar(idCompeticion);
         }
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

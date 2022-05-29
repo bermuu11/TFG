@@ -5,8 +5,7 @@
 package tfg.Alta;
 
 import java.util.ArrayList;
-import static tfg.BaseDeDatos.conectarBD;
-import misqlhsqldb.MiSQLhSQLDB;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -18,12 +17,9 @@ public class Alta_Temporada extends javax.swing.JDialog {
     
     ArrayList datos = null;
     
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     public Alta_Temporada(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        conectarBD();
     }
 
     /**
@@ -94,7 +90,7 @@ public class Alta_Temporada extends javax.swing.JDialog {
 
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
         anio = Integer.parseInt(jTextField_Anio.getText());
-        bbdd.ConsultaSQL("INSERT INTO temporada OVERRIDING SYSTEM VALUE VALUES (null, " +anio +");");
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO temporada OVERRIDING SYSTEM VALUE VALUES (null, " +anio +");");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

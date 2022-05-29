@@ -4,16 +4,16 @@
  */
 package tfg;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-import misqlhsqldb.MiSQLhSQLDB;
+import javax.swing.table.JTableHeader;
 import tfg.Alta.Alta_Jugador;
-
-import static tfg.BaseDeDatos.conectarBD;
 import tfg.InfoModificar.InfoModificar_Jugador;
 
 /**
@@ -21,72 +21,92 @@ import tfg.InfoModificar.InfoModificar_Jugador;
  * @author Antonio
  */
 public class Jugadores extends javax.swing.JPanel {
-    private class miTablaModel extends DefaultTableModel{
-        public boolean isCellEditable (int row, int column){
+
+    private static final SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
+
+    private class miTablaModel extends DefaultTableModel {
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
             return false;
         }
     }
-    
+
     ArrayList datos = null;
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
+
     private int id = -1;
-    
+
     public Jugadores() {
         initComponents();
-        conectarBD();
         estiloJLabel();
+        estiloJTable();
         cargarTabla();
-        jButton_InfoModificar.setEnabled(false);
-        jButton_Eliminar.setEnabled(false);
+        estadoBotones();
     }
-    
-    public void estiloJLabel(){
-        jLabel_Jugadores.setFont(new Font("Verdana", 0, 50));
+
+    public void estiloJLabel() {
+        jLabel_Jugadores.setFont(new Font("Segoe UI", Font.BOLD, 50));
         jLabel_Jugadores.setOpaque(true);
-        jLabel_Jugadores.setBackground(Color.yellow);
     }
-    
-    public void cargarTabla(){
+
+    public void estiloJTable() {
+        JTableHeader header = jTable_Jugadores.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        jTable_Jugadores.setFillsViewportHeight(true); // para que el fondo se use en todo
+    }
+
+    public void estadoBotones() {
+        boolean habilitado = jTable_Jugadores.getSelectedRow() != -1;
+        jButton_InfoModificar.setEnabled(habilitado);
+        jButton_Eliminar.setEnabled(habilitado);
+    }
+
+    public void cargarTabla() {
         String[] registro = null;
-        
+
         miTablaModel dtm = new miTablaModel();
-        dtm.addColumn("ID");
         dtm.addColumn("Nombre");
         dtm.addColumn("Apellidos");
         dtm.addColumn("Fecha de nacimiento");
         dtm.addColumn("Dorsal");
         dtm.addColumn("Posición");
         dtm.addColumn("País");
-                
-        datos = bbdd.ConsultaSQL("SELECT idJugador, nombre, apellido1, apellido2, fechaNacimiento, dorsal, posicion, pais\n" +
-        "FROM jugador");
-        
-        if(datos != null){
+
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idJugador, nombre, apellido1, apellido2, fechaNacimiento, dorsal, posicion, pais\n"
+                + "FROM jugador");
+
+        if (datos != null) {
             int n = datos.size();
-            for(int i = 0; i < n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datos.get(i);
+
+                try {
+                    Date fecha = formatoBD.parse(registro[4]);
+                    registro[4] = formato.format(fecha);
+                } catch (ParseException ex) {
+                }
+
                 Object[] fila = new Object[]{
-                    registro[0],
                     registro[1],
-                    registro[2] +" " +registro[3],
+                    registro[2] + " " + registro[3],
                     registro[4],
                     registro[5],
                     registro[6],
                     registro[7]
                 };
-                dtm.addRow(fila); 
+                dtm.addRow(fila);
             }
         }
-        
+
         jTable_Jugadores.setModel(dtm);
     }
-    
-    private void masInformacion(){
+
+    private void masInformacion() {
         String[] registro = (String[]) datos.get(jTable_Jugadores.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        
-        InfoModificar_Jugador ventana =  new InfoModificar_Jugador((JFrame) this.getRootPane().getParent(), true, id);
+
+        InfoModificar_Jugador ventana = new InfoModificar_Jugador((JFrame) this.getRootPane().getParent(), true, id);
         ventana.setTitle("Información jugador");
         ventana.setSize(new Dimension(1000, 700));
         ventana.setLocationRelativeTo(null);
@@ -103,6 +123,7 @@ public class Jugadores extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jLabel_Jugadores = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -111,11 +132,25 @@ public class Jugadores extends javax.swing.JPanel {
         jButton_Eliminar = new javax.swing.JButton();
         jButton_InfoModificar = new javax.swing.JButton();
 
-        jLabel_Jugadores.setBackground(new java.awt.Color(255, 255, 51));
-        jLabel_Jugadores.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel_Jugadores.setText("Jugadores");
-        jLabel_Jugadores.setMaximumSize(new java.awt.Dimension(2300, 300));
+        setBackground(new java.awt.Color(242, 255, 242));
+        setLayout(new java.awt.GridBagLayout());
 
+        jLabel_Jugadores.setBackground(new java.awt.Color(214, 239, 246));
+        jLabel_Jugadores.setForeground(new java.awt.Color(44, 123, 156));
+        jLabel_Jugadores.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel_Jugadores.setText("Jugadores");
+        jLabel_Jugadores.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 16, 8, 0));
+        jLabel_Jugadores.setMaximumSize(new java.awt.Dimension(2300, 300));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 8, 8, 8);
+        add(jLabel_Jugadores, gridBagConstraints);
+
+        jTable_Jugadores.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jTable_Jugadores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -127,12 +162,29 @@ public class Jugadores extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable_Jugadores.setRowHeight(24);
         jTable_Jugadores.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_JugadoresMouseClicked(evt);
             }
         });
+        jTable_Jugadores.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTable_JugadoresPropertyChange(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable_Jugadores);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 16, 16);
+        add(jScrollPane1, gridBagConstraints);
 
         jButton_Crear.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Crear.setText("CREAR NUEVO");
@@ -141,6 +193,13 @@ public class Jugadores extends javax.swing.JPanel {
                 jButton_CrearActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Crear, gridBagConstraints);
 
         jButton_Eliminar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Eliminar.setText("ELIMINAR");
@@ -149,6 +208,12 @@ public class Jugadores extends javax.swing.JPanel {
                 jButton_EliminarActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Eliminar, gridBagConstraints);
 
         jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_InfoModificar.setText("INFO/MODIFICAR");
@@ -157,52 +222,25 @@ public class Jugadores extends javax.swing.JPanel {
                 jButton_InfoModificarActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton_Crear)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton_InfoModificar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton_Eliminar)))
-                .addContainerGap(158, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_Crear)
-                    .addComponent(jButton_InfoModificar)
-                    .addComponent(jButton_Eliminar))
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_InfoModificar, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTable_JugadoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_JugadoresMouseClicked
-        if(evt.getClickCount()==1){
-            jButton_InfoModificar.setEnabled(true);
-            jButton_Eliminar.setEnabled(true);
+        if (evt.getClickCount() == 1) {
+            estadoBotones();
         }
-        if(evt.getClickCount()==2){
+        if (evt.getClickCount() == 2) {
             masInformacion();
         }
     }//GEN-LAST:event_jTable_JugadoresMouseClicked
 
     private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
-        Alta_Jugador ventana =  new Alta_Jugador ((JFrame) this.getRootPane().getParent(), true);
+        Alta_Jugador ventana = new Alta_Jugador((JFrame) this.getRootPane().getParent(), true);
         ventana.setTitle("Nuevo jugador");
         ventana.setSize(new Dimension(700, 500));
         ventana.setLocationRelativeTo(null);
@@ -214,13 +252,17 @@ public class Jugadores extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Jugadores.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = bbdd.ConsultaSQL("DELETE FROM jugador WHERE idJugador = '" +id +"'");
+        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM jugador WHERE idJugador = '" + id + "'");
         cargarTabla();
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 
     private void jButton_InfoModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InfoModificarActionPerformed
         masInformacion();
     }//GEN-LAST:event_jButton_InfoModificarActionPerformed
+
+    private void jTable_JugadoresPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_JugadoresPropertyChange
+        estadoBotones();
+    }//GEN-LAST:event_jTable_JugadoresPropertyChange
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

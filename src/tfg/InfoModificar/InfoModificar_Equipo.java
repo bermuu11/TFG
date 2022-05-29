@@ -5,50 +5,41 @@
 package tfg.InfoModificar;
 
 import java.awt.Dimension;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import misqlhsqldb.MiSQLhSQLDB;
-import tfg.InfoModificar.InfoModificar_Jugador;
-import tfg.Alta.Alta_Jugador;
 import tfg.Alta.Alta_JugadorEquipo;
-import tfg.Equipos;
-import static tfg.BaseDeDatos.conectarBD;
+import tfg.BaseDeDatos;
 
 /**
  *
  * @author Antonio
  */
 public class InfoModificar_Equipo extends javax.swing.JDialog {
-    private class miTablaModel extends DefaultTableModel{
-        public boolean isCellEditable (int row, int column){
+
+    private class miTablaModel extends DefaultTableModel {
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
             return false;
         }
     }
-    
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
+
     boolean modificar = false;
     int idEquipo;
     int idCompeticion;
-    int idJugador;
+
     ArrayList datos = null;
     ArrayList datosCompeticion = null;
     ArrayList datosJugador = null;
-    
+
     public InfoModificar_Equipo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    
+
     public InfoModificar_Equipo(java.awt.Frame parent, boolean modal, int idEquipo) {
         super(parent, modal);
         initComponents();
@@ -57,17 +48,22 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         cargarDatos();
         cargarCompeticiones();
         cargarTabla(idCompeticion, idEquipo);
-        if(idCompeticion != -1){
+        if (idCompeticion != -1) {
             jComboBox_Competicion.setSelectedIndex(jComboBox_Competicion.getItemCount() - 1);
             jButton_Cancelar.setVisible(false);
         } else {
             jButton_AnadirJugador.setEnabled(false);
         }
-        jButton_EliminarJugador.setEnabled(false);
+        estadoBotones();
     }
-    
-    public void modificar(){
-        if(modificar == false){
+
+    public void estadoBotones() {
+        boolean habilitado = jTable_Jugadores.getSelectedRow() != -1;
+        jButton_EliminarJugador.setEnabled(habilitado);
+    }
+
+    public void modificar() {
+        if (modificar == false) {
             jTextField_Nombre.setEnabled(false);
             jTextField_Estadio.setEnabled(false);
             jTextField_Ciudad.setEnabled(false);
@@ -87,11 +83,11 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
             jButton_Cancelar.setVisible(true);
         }
     }
-    
-    public void cargarDatos(){
-        datos = bbdd.ConsultaSQL("SELECT nombre, estadio, anioFundacion, ciudad, entrenador, presidente\n" +
-        "FROM equipo WHERE idEquipo = '"+idEquipo +"'");
-        
+
+    public void cargarDatos() {
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT nombre, estadio, anioFundacion, ciudad, entrenador, presidente\n"
+                + "FROM equipo WHERE idEquipo = " + idEquipo);
+
         String[] registro = (String[]) datos.get(0);
         jTextField_Nombre.setText(registro[0]);
         jTextField_Estadio.setText(registro[1]);
@@ -100,30 +96,30 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         jTextField_Entrenador.setText(registro[4]);
         jTextField_Presidente.setText(registro[5]);
     }
-    
-    public void cargarCompeticiones(){
+
+    public void cargarCompeticiones() {
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosCompeticion = bbdd.ConsultaSQL("SELECT idCompeticion, nombre FROM competicion C, compite CE WHERE (CE.idCompeticion = C.idCompeticion) AND (CE.idEquipo = " +idEquipo +");");
-        
-        if(datosCompeticion != null){
+        datosCompeticion = BaseDeDatos.getBD().ConsultaSQL("SELECT idCompeticion, nombre FROM competicion C, compite CE WHERE (CE.idCompeticion = C.idCompeticion) AND (CE.idEquipo = " + idEquipo + ");");
+
+        if (datosCompeticion != null) {
             int n = datosCompeticion.size();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datosCompeticion.get(i);
                 dcbm.addElement(registro[1]);
             }
         }
         jComboBox_Competicion.setModel(dcbm);
-        if(datosCompeticion.size() > 0){
+        if (datosCompeticion.size() > 0) {
             idCompeticion = Integer.parseInt(registro[0]); //identificador de la ultima competicion leida
         } else {
             idCompeticion = -1;
         }
     }
-    
-    public void cargarTabla(int idCompeticion, int idEquipo){
+
+    public void cargarTabla(int idCompeticion, int idEquipo) {
         String[] registro = null;
-        
+
         miTablaModel dtm = new miTablaModel();
         dtm.addColumn("Nombre");
         dtm.addColumn("Apellidos");
@@ -131,23 +127,23 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         dtm.addColumn("Posición");
         dtm.addColumn("País");
         dtm.addColumn("Fecha traspaso");
-        
-        if(idCompeticion != -1){
-            datosJugador = bbdd.ConsultaSQL("SELECT J.idJugador, J.nombre, J.apellido1, J.apellido2, J.fechaNacimiento, J.posicion, J.pais, P.fechaTraspaso FROM jugador J, pertenece P WHERE (P.idJugador = J.idJugador) AND (P.idEquipo = " +idEquipo +") AND (P.idCompeticion = " +idCompeticion +");");
 
-            if(datosJugador != null){
+        if (idCompeticion != -1) {
+            datosJugador = BaseDeDatos.getBD().ConsultaSQL("SELECT J.idJugador, J.nombre, J.apellido1, J.apellido2, J.fechaNacimiento, J.posicion, J.pais, P.fechaTraspaso FROM jugador J, pertenece P WHERE (P.idJugador = J.idJugador) AND (P.idEquipo = " + idEquipo + ") AND (P.idCompeticion = " + idCompeticion + ");");
+
+            if (datosJugador != null) {
                 int n = datosJugador.size();
-                for(int i = 0; i < n; i++){
+                for (int i = 0; i < n; i++) {
                     registro = (String[]) datosJugador.get(i);
                     Object[] fila = new Object[]{
                         registro[1],
-                        registro[2] +" " +registro[3],
+                        registro[2] + " " + registro[3],
                         registro[4],
                         registro[5],
                         registro[6],
                         registro[7]
                     };
-                    dtm.addRow(fila); 
+                    dtm.addRow(fila);
                 }
             }
         }
@@ -230,6 +226,11 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         jTable_Jugadores.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_JugadoresMouseClicked(evt);
+            }
+        });
+        jTable_Jugadores.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTable_JugadoresPropertyChange(evt);
             }
         });
         jScrollPane1.setViewportView(jTable_Jugadores);
@@ -361,14 +362,47 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean hayError(String nombre, String campo) {
+        if (campo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo " + nombre + " es obligatorio.", "Error", JOptionPane.WARNING_MESSAGE);
+            return true;
+        }
+        return false;
+    }
+
     private void jButton_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ModificarActionPerformed
-        if(modificar == false){
+        if (modificar == false) {
             modificar = true;
             modificar();
         } else {
+            String nombre = jTextField_Nombre.getText();
+            if (hayError("nombre", nombre)) {
+                return;
+            }
+            String estadio = jTextField_Estadio.getText();
+            if (hayError("estadio", estadio)) {
+                return;
+            }
+            String ciudad = jTextField_Ciudad.getText();
+            if (hayError("ciudad", ciudad)) {
+                return;
+            }
+            String entrenador = jTextField_Entrenador.getText();
+            if (hayError("entrenador", entrenador)) {
+                return;
+            }
+            String presidente = jTextField_Presidente.getText();
+            int anioFundacion;
+            try {
+                anioFundacion = Integer.parseInt(jTextField_AnoFundacion.getText());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "El año de fundación es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            //Si todo ha ido bien actualiza el equipo y finaliza el modo modificación
+            BaseDeDatos.getBD().ConsultaSQL("UPDATE equipo SET nombre='" + nombre + "',estadio='" + estadio + "',anioFundacion="+anioFundacion+",ciudad='" + ciudad + "',entrenador='" + entrenador + "',presidente='" + presidente + "' WHERE idEquipo=" + idEquipo);
             modificar = false;
             modificar();
-            datos = bbdd.ConsultaSQL("UPDATE equipo SET nombre = '" +jTextField_Nombre.getText() +"', estadio = '" +jTextField_Estadio.getText() +"', ciudad = '" +jTextField_Ciudad.getText() +"', anioFundacion = '" +jTextField_AnoFundacion.getText() +"', entrenador = '" +jTextField_Entrenador.getText() +"', presidente = '" +jTextField_Presidente.getText() +"' WHERE idEquipo = '" +idEquipo +"'");
             cargarDatos();
         }
     }//GEN-LAST:event_jButton_ModificarActionPerformed
@@ -378,11 +412,13 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton_CerrarActionPerformed
 
     private void jTable_JugadoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_JugadoresMouseClicked
-        if(evt.getClickCount()==1){
-            jButton_EliminarJugador.setEnabled(true);
+        if (evt.getClickCount() == 1) {
+            estadoBotones();
         }
-        if(evt.getClickCount()==2){
-            InfoModificar_Jugador ventana =  new InfoModificar_Jugador((JFrame) this.getRootPane().getParent(), true);
+        if (evt.getClickCount() == 2) {
+            String[] registro = (String[]) datosJugador.get(jTable_Jugadores.getSelectedRow());
+            int idJugador = Integer.parseInt(registro[0]);
+            InfoModificar_Jugador ventana = new InfoModificar_Jugador((JFrame) this.getRootPane().getParent().getParent(), true, idJugador);
             ventana.setTitle("Información jugador");
             ventana.setSize(new Dimension(700, 500));
             ventana.setLocationRelativeTo(null);
@@ -394,8 +430,8 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     private void jButton_AnadirJugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirJugadorActionPerformed
         String[] registro = (String[]) datosCompeticion.get(jComboBox_Competicion.getSelectedIndex());
         idCompeticion = Integer.parseInt(registro[0]);
-        
-        Alta_JugadorEquipo ventana =  new Alta_JugadorEquipo((JFrame) this.getRootPane().getParent().getParent(), true, idCompeticion, idEquipo);
+
+        Alta_JugadorEquipo ventana = new Alta_JugadorEquipo((JFrame) this.getRootPane().getParent().getParent(), true, idCompeticion, idEquipo);
         ventana.setTitle("Añadir jugador");
         ventana.setSize(new Dimension(500, 300));
         ventana.setLocationRelativeTo(null);
@@ -411,8 +447,8 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
 
     private void jButton_EliminarJugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarJugadorActionPerformed
         String[] registro = (String[]) datosJugador.get(jTable_Jugadores.getSelectedRow());
-        idJugador = Integer.parseInt(registro[0]);
-        bbdd.ConsultaSQL("DELETE FROM pertenece WHERE (idJugador = '" +idJugador +"') AND (idCompeticion = " +idCompeticion +") AND (idEquipo = " +idEquipo +");");
+        int idJugador = Integer.parseInt(registro[0]);
+        BaseDeDatos.getBD().ConsultaSQL("DELETE FROM pertenece WHERE (idJugador = '" + idJugador + "') AND (idCompeticion = " + idCompeticion + ") AND (idEquipo = " + idEquipo + ");");
         cargarTabla(idCompeticion, idEquipo);
     }//GEN-LAST:event_jButton_EliminarJugadorActionPerformed
 
@@ -421,6 +457,10 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         idCompeticion = Integer.parseInt(registro[0]);
         cargarTabla(idCompeticion, idEquipo);
     }//GEN-LAST:event_jComboBox_CompeticionActionPerformed
+
+    private void jTable_JugadoresPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_JugadoresPropertyChange
+        estadoBotones();
+    }//GEN-LAST:event_jTable_JugadoresPropertyChange
 
     /**
      * @param args the command line arguments

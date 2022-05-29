@@ -8,9 +8,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import misqlhsqldb.MiSQLhSQLDB;
+import javax.swing.JOptionPane;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -18,27 +17,17 @@ import misqlhsqldb.MiSQLhSQLDB;
  */
 public class InfoModificar_Jugador extends javax.swing.JDialog {
 
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
+    private static final SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
+
     boolean modificar = false;
     int id = -1;
-    ArrayList datos = null;
-    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-    SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
 
-    private String nombre = "";
-    private String apellido1 = "";
-    private String apellido2 = "";
-    private int dorsal = -1;
-    private String fechaNacimiento;
-    private String posicion = "";
-    private String pais = "";
-    
     public InfoModificar_Jugador(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    
+
     public InfoModificar_Jugador(java.awt.Frame parent, boolean modal, int id) {
         super(parent, modal);
         initComponents();
@@ -47,9 +36,9 @@ public class InfoModificar_Jugador extends javax.swing.JDialog {
         cargarDatos();
         jButton_Cancelar.setVisible(false);
     }
-    
-    public void modificar(){
-        if(modificar == false){
+
+    public void modificar() {
+        if (modificar == false) {
             jTextField_Nombre.setEnabled(false);
             jTextField_Dorsal.setEnabled(false);
             jTextField_Posicion.setEnabled(false);
@@ -58,6 +47,7 @@ public class InfoModificar_Jugador extends javax.swing.JDialog {
             jTextField_Apellido2.setEnabled(false);
             jTextField_FechaNacimiento.setEnabled(false);
             jButton_Modificar.setText("MODIFICAR");
+            jButton_Cancelar.setVisible(false);
         } else {
             jTextField_Nombre.setEnabled(true);
             jTextField_Dorsal.setEnabled(true);
@@ -70,11 +60,11 @@ public class InfoModificar_Jugador extends javax.swing.JDialog {
             jButton_Cancelar.setVisible(true);
         }
     }
-    
-    public void cargarDatos(){
-        datos = bbdd.ConsultaSQL("SELECT nombre, apellido1, apellido2, dorsal, fechaNacimiento, posicion, pais\n" +
-        "FROM jugador WHERE idJugador = '"+id +"'");
-        
+
+    public void cargarDatos() {
+        ArrayList datos = BaseDeDatos.getBD().ConsultaSQL("SELECT nombre, apellido1, apellido2, dorsal, fechaNacimiento, posicion, pais\n"
+                + "FROM jugador WHERE idJugador = '" + id + "'");
+
         String[] registro = (String[]) datos.get(0);
         jTextField_Nombre.setText(registro[0]);
         jTextField_Apellido1.setText(registro[1]);
@@ -84,7 +74,6 @@ public class InfoModificar_Jugador extends javax.swing.JDialog {
             Date fecha = formatoBD.parse(registro[4]);
             registro[4] = formato.format(fecha);
         } catch (ParseException ex) {
-            Logger.getLogger(InfoModificar_Jugador.class.getName()).log(Level.SEVERE, null, ex);
         }
         jTextField_FechaNacimiento.setText(registro[4]);
         jTextField_Posicion.setText(registro[5]);
@@ -235,26 +224,61 @@ public class InfoModificar_Jugador extends javax.swing.JDialog {
         this.setVisible(false);
     }//GEN-LAST:event_jButton_CerrarActionPerformed
 
+    private boolean hayError(String nombre, String campo) {
+        if (campo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo " + nombre + " es obligatorio.", "Error", JOptionPane.WARNING_MESSAGE);
+            return true;
+        }
+        return false;
+    }
+
     private void jButton_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ModificarActionPerformed
-        if(modificar == false){
+        if (modificar == false) {
+            //Se ha pulsado como modificar
             modificar = true;
             modificar();
         } else {
-            modificar = false;
-            modificar();
-            nombre = jTextField_Nombre.getText();
-            apellido1 = jTextField_Apellido1.getText();
-            apellido2 = jTextField_Apellido2.getText();
-            dorsal = Integer.parseInt(jTextField_Dorsal.getText());
+            //Se ha pulsado como guardar
+            String nombre = jTextField_Nombre.getText();
+            if (hayError("nombre", nombre)) {
+                return;
+            }
+            String apellido1 = jTextField_Apellido1.getText();
+            if (hayError("primer apellido", apellido1)) {
+                return;
+            }
+            String apellido2 = jTextField_Apellido2.getText();
+            if (hayError("segundo apellido", apellido2)) {
+                return;
+            }
+            String fechaNacimiento = "";
             try {
                 Date fecha = formato.parse(jTextField_FechaNacimiento.getText());
                 fechaNacimiento = formatoBD.format(fecha);
             } catch (ParseException ex) {
-                //Logger.getLogger(Alta_Jugador.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "El formato de la fecha de nacimiento no es correcto. Debe ser 'dd/mm/aaaa'.", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
             }
-            posicion = jTextField_Posicion.getText();
-            pais = jTextField_Pais.getText();
-            datos = bbdd.ConsultaSQL("UPDATE jugador SET nombre = '" +nombre +"', apellido1 = '" +apellido1 +"', apellido2 = '" +apellido2 +"', dorsal = " +dorsal +", fechaNacimiento = '" +fechaNacimiento +"', posicion = '" +posicion +"', pais = '" +pais +"' WHERE idJugador = '" +id +"'");
+            int dorsal;
+            try {
+                dorsal = Integer.parseInt(jTextField_Dorsal.getText());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "El dorsal es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String posicion = jTextField_Posicion.getText();
+            if (hayError("posición", posicion)) {
+                return;
+            }
+            String pais = jTextField_Pais.getText();
+            if (hayError("país", pais)) {
+                return;
+            }
+
+            // Todo ha ido bien y actualiza el jugador en la base de datos y finaliza el modo modificación
+            BaseDeDatos.getBD().ConsultaSQL("UPDATE jugador SET nombre = '" + nombre + "', apellido1 = '" + apellido1 + "', apellido2 = '" + apellido2 + "', dorsal = " + dorsal + ", fechaNacimiento = '" + fechaNacimiento + "', posicion = '" + posicion + "', pais = '" + pais + "' WHERE idJugador = '" + id + "'");
+            modificar = false;
+            modificar();
         }
     }//GEN-LAST:event_jButton_ModificarActionPerformed
 

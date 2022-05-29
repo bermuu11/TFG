@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
-import misqlhsqldb.MiSQLhSQLDB;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -17,8 +17,6 @@ import misqlhsqldb.MiSQLhSQLDB;
  */
 public class Alta_JugadorEquipo extends javax.swing.JDialog {
 
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     int idCompeticion = -1;
     int idEquipo = -1;
     String fechaTraspaso;
@@ -43,7 +41,7 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
     public void cargarJugadores(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datos = bbdd.ConsultaSQL("SELECT idJugador, nombre, apellido1, apellido2 FROM jugador");
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idJugador, nombre, apellido1, apellido2 FROM jugador");
         
         if(datos != null){
             int n = datos.size();
@@ -144,7 +142,7 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
         }
         String[] registro = (String[]) datos.get(jComboBox_Jugadores.getSelectedIndex());
         int idJugador = Integer.parseInt(registro[0]);
-        bbdd.ConsultaSQL("INSERT INTO pertenece VALUES ("+idJugador +", " +idEquipo +", " +idCompeticion +", '" +fechaTraspaso +"');");
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO pertenece VALUES ("+idJugador +", " +idEquipo +", " +idCompeticion +", '" +fechaTraspaso +"');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

@@ -5,8 +5,7 @@
 package tfg.Alta;
 
 import java.util.ArrayList;
-import misqlhsqldb.MiSQLhSQLDB;
-import static tfg.BaseDeDatos.conectarBD;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -19,12 +18,9 @@ public class Alta_Liga extends javax.swing.JDialog {
     
     ArrayList datos = null;
     
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     public Alta_Liga(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        conectarBD();
     }
 
     /**
@@ -108,7 +104,7 @@ public class Alta_Liga extends javax.swing.JDialog {
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
         nombre = jTextField_Nombre.getText();
         pais = jTextField_Pais.getText();
-        bbdd.ConsultaSQL("INSERT INTO liga OVERRIDING SYSTEM VALUE VALUES (null, '" +nombre +"', '" +pais +"');");
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO liga OVERRIDING SYSTEM VALUE VALUES (null, '" +nombre +"', '" +pais +"');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

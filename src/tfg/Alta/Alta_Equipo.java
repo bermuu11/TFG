@@ -4,15 +4,8 @@
  */
 package tfg.Alta;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import tfg.Equipos;
-import static tfg.BaseDeDatos.conectarBD;
-
-import misqlhsqldb.MiSQLhSQLDB;
+import javax.swing.JOptionPane;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -20,19 +13,9 @@ import misqlhsqldb.MiSQLhSQLDB;
  */
 public class Alta_Equipo extends javax.swing.JDialog {
 
-    private String nombre = "";
-    private String estadio = "";
-    private int anioFundacion = 0;
-    private String entrenador = "";
-    private String presidente = "";
-    private String ciudad = "";
-    
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     public Alta_Equipo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        conectarBD();
     }
 
     /**
@@ -165,14 +148,40 @@ public class Alta_Equipo extends javax.swing.JDialog {
         this.setVisible(false);
     }//GEN-LAST:event_jButton_CancelarActionPerformed
 
+    private boolean hayError(String nombre, String campo) {
+        if (campo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo " + nombre + " es obligatorio.", "Error", JOptionPane.WARNING_MESSAGE);
+            return true;
+        }
+        return false;
+    }
+
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
-        nombre = jTextField_Nombre.getText();
-        estadio = jTextField_Estadio.getText();
-        ciudad = jTextField_Ciudad.getText();
-        entrenador = jTextField_Entrenador.getText();
-        presidente = jTextField_Presidente.getText();
-        anioFundacion = Integer.parseInt(jTextField_AnoFundacion.getText());
-        bbdd.ConsultaSQL("INSERT INTO equipo OVERRIDING SYSTEM VALUE VALUES (null, '" +nombre +"', '" +estadio +"', " +anioFundacion +", '" +ciudad +"', '" +entrenador +"', '" +presidente +"');");
+        String nombre = jTextField_Nombre.getText();
+        if (hayError("nombre", nombre)) {
+            return;
+        }
+        String estadio = jTextField_Estadio.getText();
+        if (hayError("estadio", estadio)) {
+            return;
+        }
+        String ciudad = jTextField_Ciudad.getText();
+        if (hayError("ciudad", ciudad)) {
+            return;
+        }
+        String entrenador = jTextField_Entrenador.getText();
+        if (hayError("entrenador", entrenador)) {
+            return;
+        }
+        String presidente = jTextField_Presidente.getText();
+        int anioFundacion;
+        try {
+            anioFundacion = Integer.parseInt(jTextField_AnoFundacion.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "El año de fundación es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO equipo OVERRIDING SYSTEM VALUE VALUES (null, '" + nombre + "', '" + estadio + "', " + anioFundacion + ", '" + ciudad + "', '" + entrenador + "', '" + presidente + "');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

@@ -7,18 +7,10 @@ package tfg;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-
-import misqlhsqldb.MiSQLhSQLDB;
 import tfg.Alta.Alta_Competicion;
-import static tfg.BaseDeDatos.conectarBD;
 import tfg.InfoModificar.InfoModificar_Competicion;
 
 /**
@@ -36,11 +28,8 @@ public class Competiciones extends javax.swing.JPanel {
     
     ArrayList datos = null;
         
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     public Competiciones() {
         initComponents();
-        conectarBD();
         cargarTabla();
         estiloJLabel();
         jButton_Eliminar.setEnabled(false);
@@ -55,7 +44,7 @@ public class Competiciones extends javax.swing.JPanel {
         dtm.addColumn("Liga");
         dtm.addColumn("Nombre");
                 
-        datos = bbdd.ConsultaSQL("SELECT C.idCompeticion, T.anio, L.nombre, C.nombre\n" +
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT C.idCompeticion, T.anio, L.nombre, C.nombre\n" +
         "FROM temporada T, liga L, competicion C WHERE T.idTemporada = C.idTemporada AND L.idLiga = C.idLiga");
         
         if(datos != null){
@@ -206,7 +195,7 @@ public class Competiciones extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Competiciones.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = bbdd.ConsultaSQL("DELETE FROM competicion WHERE idCompeticion = '" +id +"'");
+        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM competicion WHERE idCompeticion = '" +id +"'");
         cargarTabla();
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 

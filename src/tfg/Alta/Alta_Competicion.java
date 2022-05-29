@@ -6,9 +6,7 @@ package tfg.Alta;
 
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import misqlhsqldb.MiSQLhSQLDB;
-import static tfg.BaseDeDatos.conectarBD;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -23,13 +21,10 @@ public class Alta_Competicion extends javax.swing.JDialog {
     ArrayList datosTemporadas = null;
     ArrayList datosLigas = null;
     
-    
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
+
     public Alta_Competicion(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        conectarBD();
         cargarTemporadas();
         cargarLigas();
     }
@@ -37,7 +32,7 @@ public class Alta_Competicion extends javax.swing.JDialog {
     public void cargarTemporadas(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosTemporadas = bbdd.ConsultaSQL("SELECT idTemporada, anio FROM temporada");
+        datosTemporadas = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada, anio FROM temporada");
         
         if(datosTemporadas != null){
             int n = datosTemporadas.size();
@@ -52,7 +47,7 @@ public class Alta_Competicion extends javax.swing.JDialog {
     public void cargarLigas(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosLigas = bbdd.ConsultaSQL("SELECT idLiga, nombre FROM liga");
+        datosLigas = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga, nombre FROM liga");
         
         if(datosLigas != null){
             int n = datosLigas.size();
@@ -166,7 +161,7 @@ public class Alta_Competicion extends javax.swing.JDialog {
         registro = (String[]) datosLigas.get(jComboBox_Ligas.getSelectedIndex());
         idLiga = Integer.parseInt(registro[0]);
         nombre = jTextField_Nombre.getText();
-        bbdd.ConsultaSQL("INSERT INTO competicion OVERRIDING SYSTEM VALUE VALUES (null, '" +idTemporada +"', '" +idLiga +"', '" +nombre +"');");
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO competicion OVERRIDING SYSTEM VALUE VALUES (null, '" +idTemporada +"', '" +idLiga +"', '" +nombre +"');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

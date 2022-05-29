@@ -7,19 +7,10 @@ package tfg;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-
-import misqlhsqldb.MiSQLhSQLDB;
 import tfg.Alta.Alta_Temporada;
-import static tfg.BaseDeDatos.conectarBD;
 
 /**
  *
@@ -35,14 +26,11 @@ public class Temporadas extends javax.swing.JPanel {
     
     ArrayList datos = null;
     
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     int id = -1;
     int anio = -1;
     
     public Temporadas() {
         initComponents();
-        conectarBD();
         cargarTabla();
         estiloJLabel();
         establecerDiseño();
@@ -62,7 +50,7 @@ public class Temporadas extends javax.swing.JPanel {
         dtm.addColumn("ID");
         dtm.addColumn("Año");
                 
-        datos = bbdd.ConsultaSQL("SELECT idTemporada, anio FROM temporada");
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada, anio FROM temporada");
         
         if(datos != null){
             int n = datos.size();
@@ -161,7 +149,7 @@ public class Temporadas extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Temporadas.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = bbdd.ConsultaSQL("DELETE FROM temporada WHERE idTemporada = '" +id +"'");
+        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM temporada WHERE idTemporada = '" +id +"'");
         cargarTabla();
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 

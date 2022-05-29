@@ -8,10 +8,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import misqlhsqldb.MiSQLhSQLDB;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -19,19 +17,11 @@ import misqlhsqldb.MiSQLhSQLDB;
  */
 public class Alta_Jugador extends javax.swing.JDialog {
 
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-    SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
 
     ArrayList datos = null;
-    private String nombre = "";
-    private String apellido1 = "";
-    private String apellido2 = "";
-    private int dorsal = -1;
-    private String fechaNacimiento;
-    private String posicion = "";
-    private String pais = "";
-    
+
     public Alta_Jugador(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -165,20 +155,53 @@ public class Alta_Jugador extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean hayError(String nombre, String campo) {
+        if (campo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo " + nombre + " es obligatorio.", "Error", JOptionPane.WARNING_MESSAGE);
+            return true;
+        }
+        return false;
+    }
+
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
-        nombre = jTextField_Nombre.getText();
-        apellido1 = jTextField_Apellido1.getText();
-        apellido2 = jTextField_Apellido2.getText();
-        dorsal = Integer.parseInt(jTextField_Dorsal.getText());
+        String nombre = jTextField_Nombre.getText();
+        if (hayError("nombre", nombre)) {
+            return;
+        }
+        String apellido1 = jTextField_Apellido1.getText();
+        if (hayError("primer apellido", apellido1)) {
+            return;
+        }
+        String apellido2 = jTextField_Apellido2.getText();
+        if (hayError("segundo apellido", apellido2)) {
+            return;
+        }
+        String fechaNacimiento = "";
         try {
             Date fecha = formato.parse(jTextField_FechaNacimiento.getText());
             fechaNacimiento = formatoBD.format(fecha);
         } catch (ParseException ex) {
-            //Logger.getLogger(Alta_Jugador.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "El formato de la fecha de nacimiento no es correcto. Debe ser 'dd/mm/aaaa'.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        posicion = jTextField_Posicion.getText();
-        pais = jTextField_Pais.getText();
-        bbdd.ConsultaSQL("INSERT INTO jugador OVERRIDING SYSTEM VALUE VALUES (null, '" +nombre +"', '" +apellido1 +"', '" +apellido2 +"', " +dorsal +", '" +fechaNacimiento +"', '" +posicion +"', '" +pais +"');");
+        int dorsal;
+        try {
+            dorsal = Integer.parseInt(jTextField_Dorsal.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "El dorsal es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String posicion = jTextField_Posicion.getText();
+        if (hayError("posición", posicion)) {
+            return;
+        }
+        String pais = jTextField_Pais.getText();
+        if (hayError("país", pais)) {
+            return;
+        }
+
+        // Todo ha ido bien y puede insertar en la base de datos
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO jugador OVERRIDING SYSTEM VALUE VALUES (null, '" + nombre + "', '" + apellido1 + "', '" + apellido2 + "', " + dorsal + ", '" + fechaNacimiento + "', '" + posicion + "', '" + pais + "');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

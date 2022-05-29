@@ -55,6 +55,9 @@ public class Inicio extends javax.swing.JFrame {
     }
     
     public void establecerIconos(){
+        // Cambia el icono de la aplicación
+        setIconImage(new ImageIcon("src/imagenes/icono.png").getImage());
+
         jButton_Inicio.setIcon(new ImageIcon("src/imagenes/casa1 (1).png"));
     }
 

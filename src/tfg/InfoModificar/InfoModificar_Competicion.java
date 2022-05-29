@@ -7,7 +7,7 @@ package tfg.InfoModificar;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
-import misqlhsqldb.MiSQLhSQLDB;
+import tfg.BaseDeDatos;
 
 /**
  *
@@ -20,7 +20,6 @@ public class InfoModificar_Competicion extends javax.swing.JDialog {
         }
     }
     
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
     ArrayList datosTemporada = null;
     ArrayList datosLiga = null;
     ArrayList datosCompeticion = null;
@@ -44,7 +43,7 @@ public class InfoModificar_Competicion extends javax.swing.JDialog {
     public void cargarTemporadas(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosTemporada = bbdd.ConsultaSQL("SELECT idTemporada, anio FROM temporada;");
+        datosTemporada = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada, anio FROM temporada;");
         
         if(datosTemporada != null){
             int n = datosTemporada.size();
@@ -59,7 +58,7 @@ public class InfoModificar_Competicion extends javax.swing.JDialog {
     public void cargarLigas(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosLiga = bbdd.ConsultaSQL("SELECT idLiga, nombre FROM liga;");
+        datosLiga = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga, nombre FROM liga;");
         
         if(datosLiga != null){
             int n = datosLiga.size();
@@ -74,7 +73,7 @@ public class InfoModificar_Competicion extends javax.swing.JDialog {
     //MIRAR
     public void mostrarTemporadaLigaActual(){
         String[] registro = null;
-        datosCompeticion = bbdd.ConsultaSQL("SELECT idTemporada, idLiga FROM competicion WHERE idCompeticion = " +idCompeticion +";");
+        datosCompeticion = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada, idLiga FROM competicion WHERE idCompeticion = " +idCompeticion +";");
         jComboBox_Temporadas.setSelectedIndex(Integer.parseInt(registro[0]));
         jComboBox_Ligas.setSelectedIndex(Integer.parseInt(registro[1]));
     }
@@ -90,7 +89,7 @@ public class InfoModificar_Competicion extends javax.swing.JDialog {
         dtm.addColumn("Entrenador");
         dtm.addColumn("Presidente");
         
-        datosEquipos = bbdd.ConsultaSQL("SELECT E.nombre, E.estadio, E.anioFundacion, E.ciudad, E.entrenador, E.presidente FROM equipo E, compite C WHERE (C.idEquipo = E.idEquipo) AND (C.idCompeticion = " +idCompeticion +");");
+        datosEquipos = BaseDeDatos.getBD().ConsultaSQL("SELECT E.nombre, E.estadio, E.anioFundacion, E.ciudad, E.entrenador, E.presidente FROM equipo E, compite C WHERE (C.idEquipo = E.idEquipo) AND (C.idCompeticion = " +idCompeticion +");");
 
         if(datosEquipos != null){
             int n = datosEquipos.size();

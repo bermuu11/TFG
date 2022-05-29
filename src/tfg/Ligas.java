@@ -4,20 +4,12 @@
  */
 package tfg;
 
-import java.sql.Connection;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-
-import misqlhsqldb.MiSQLhSQLDB;
-import static tfg.BaseDeDatos.conectarBD;
 import tfg.Alta.Alta_Liga;
 
 /**
@@ -29,8 +21,6 @@ public class Ligas extends javax.swing.JPanel {
     /**
      * Creates new form Ligas
      */
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
-    
     ArrayList datos = null;
     
     int id = -1;
@@ -39,7 +29,6 @@ public class Ligas extends javax.swing.JPanel {
     
     public Ligas() {
         initComponents();
-        conectarBD();
         cargarTabla();
         estiloJLabel();
         jButton_Eliminar.setEnabled(false);
@@ -53,7 +42,7 @@ public class Ligas extends javax.swing.JPanel {
         dtm.addColumn("Nombre");
         dtm.addColumn("País");
                 
-        datos = bbdd.ConsultaSQL("SELECT idLiga, nombre, pais\n" +
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga, nombre, pais\n" +
         "FROM liga");
         
         if(datos != null){
@@ -153,7 +142,7 @@ public class Ligas extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Ligas.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = bbdd.ConsultaSQL("DELETE FROM liga WHERE idLiga = '" +id +"'");
+        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM liga WHERE idLiga = '" +id +"'");
         cargarTabla();
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 

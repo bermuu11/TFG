@@ -10,16 +10,11 @@ import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import misqlhsqldb.MiSQLhSQLDB;
 import tfg.Alta.Alta_Jornada;
-
-import static tfg.BaseDeDatos.conectarBD;
 import tfg.InfoModificar.Modificar_Jornada;
 
 /**
@@ -33,13 +28,12 @@ public class Principal extends javax.swing.JPanel {
     ArrayList datosCompeticion = null;
     ArrayList datosPartidos = null;
     ArrayList datosJornada = null;
-    //ver idcompeticion
+    ArrayList datosClasificacion = null;
+    
     int idTemporada;
     int idLiga;
     int idCompeticion;
     int jornadaActual;
-    
-    MiSQLhSQLDB bbdd = new MiSQLhSQLDB("SA", "SA");
     
     private class miTablaModel extends DefaultTableModel{
         public boolean isCellEditable (int row, int column){
@@ -49,7 +43,6 @@ public class Principal extends javax.swing.JPanel {
     
     public Principal() {
         initComponents();
-        conectarBD();
         estiloJLabel();
         cargarTablaClasificacion();
         cargarJornadas();
@@ -65,6 +58,8 @@ public class Principal extends javax.swing.JPanel {
     }
     
     public void cargarTablaClasificacion(){
+        String[] registro = null;
+        
         miTablaModel dtm = new miTablaModel();
         dtm.addColumn("Posición");
         dtm.addColumn("Equipo");
@@ -75,19 +70,27 @@ public class Principal extends javax.swing.JPanel {
         dtm.addColumn("Goles a favor");
         dtm.addColumn("Goles en contra");
         dtm.addColumn("Puntos");
-        Object[] fila = new Object[]{
-                    1,
-                    "Real Madrid",
-                    34,
-                    30,
-                    2,
-                    2,
-                    73,
-                    21,
-                    92,
-                };
-                dtm.addRow(fila);
         
+        datosClasificacion = BaseDeDatos.getBD().ConsultaSQL("SELECT C.posicion, E.nombre, C.partidosJugados, C.partidosGanados, C.partidosEmpatados, C.partidosPerdidos, C.golesAfavor, C.golesEnContra, C.puntos FROM clasifica C, equipo E WHERE (C.idCompeticion = " +idCompeticion +") AND (C.idEquipo = E.idEquipo) ORDER BY C.posicion");
+        
+        if(datosClasificacion != null){
+            int n = datosClasificacion.size();
+            for(int i = 0; i < n; i++){
+                registro = (String[]) datosClasificacion.get(i);
+                Object[] fila = new Object[]{
+                    registro[0],
+                    registro[1],
+                    registro[2],
+                    registro[3],
+                    registro[4],
+                    registro[5],
+                    registro[6],
+                    registro[7],
+                    registro[8]
+                };
+                dtm.addRow(fila); 
+            }
+        }
         //Establecer modelo
         jTable_Clasificacion.setModel(dtm);
         
@@ -112,7 +115,7 @@ public class Principal extends javax.swing.JPanel {
     
     public void cargarJornadas(){
         String[] registro = null;
-        datosJornada = bbdd.ConsultaSQL("SELECT DISTINCT jornada FROM partido");
+        datosJornada = BaseDeDatos.getBD().ConsultaSQL("SELECT DISTINCT jornada FROM partido");
         DefaultComboBoxModel dbcm = new DefaultComboBoxModel();
         for(int i=0; i<datosJornada.size();i++){
             registro = (String[]) datosJornada.get(i);
@@ -142,7 +145,7 @@ public class Principal extends javax.swing.JPanel {
             registro = (String[]) datosJornada.get(jComboBox_Jornadas.getSelectedIndex());
             jornadaActual = Integer.parseInt(registro[0]);
 
-            datosPartidos = bbdd.ConsultaSQL("SELECT P.jornada, P.hora, P.fecha, E.nombre, P.golesLocal, P.golesVisitante, E1.nombre, P.estado FROM partido P, equipo E, equipo E1 WHERE (P.id_equipoLocal = E.idEquipo) AND (P.id_equipoVisitante = E1.idEquipo) AND (P.jornada = " +jornadaActual +") AND (P.idCompeticion = " +idCompeticion +")");
+            datosPartidos = BaseDeDatos.getBD().ConsultaSQL("SELECT P.jornada, P.hora, P.fecha, E.nombre, P.golesLocal, P.golesVisitante, E1.nombre, P.estado FROM partido P, equipo E, equipo E1 WHERE (P.id_equipoLocal = E.idEquipo) AND (P.id_equipoVisitante = E1.idEquipo) AND (P.jornada = " +jornadaActual +") AND (P.idCompeticion = " +idCompeticion +")");
 
             if(datosPartidos != null){
                 int n = datosPartidos.size();
@@ -186,7 +189,7 @@ public class Principal extends javax.swing.JPanel {
     public void cargarTemporadas(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosTemporada = bbdd.ConsultaSQL("SELECT idTemporada, anio FROM temporada");
+        datosTemporada = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada, anio FROM temporada");
         
         if(datosTemporada != null){
             int n = datosTemporada.size();
@@ -201,7 +204,7 @@ public class Principal extends javax.swing.JPanel {
     public void cargarCompeticiones(){
         DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
         String[] registro = null;
-        datosCompeticion = bbdd.ConsultaSQL("SELECT idCompeticion, nombre FROM competicion WHERE idTemporada = " +idTemporada);
+        datosCompeticion = BaseDeDatos.getBD().ConsultaSQL("SELECT idCompeticion, nombre FROM competicion WHERE idTemporada = " +idTemporada);
         
         if(datosCompeticion != null){
             int n = datosCompeticion.size();
@@ -228,6 +231,7 @@ public class Principal extends javax.swing.JPanel {
         jLabel_Temporadas = new javax.swing.JLabel();
         jComboBox_Competiciones = new javax.swing.JComboBox<>();
         jLabel_Competiciones = new javax.swing.JLabel();
+        jButton_Estadisticas = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jButton_Anterior = new javax.swing.JButton();
@@ -266,6 +270,13 @@ public class Principal extends javax.swing.JPanel {
 
         jLabel_Competiciones.setText("Competiciones");
 
+        jButton_Estadisticas.setText("ESTADÍSTICAS");
+        jButton_Estadisticas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EstadisticasActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -277,9 +288,14 @@ public class Principal extends javax.swing.JPanel {
                     .addComponent(jLabel_Temporadas))
                 .addGap(69, 69, 69)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox_Competiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Competiciones))
-                .addContainerGap(142, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel_Competiciones)
+                        .addContainerGap(142, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jComboBox_Competiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_Estadisticas)
+                        .addGap(27, 27, 27))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -291,7 +307,8 @@ public class Principal extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBox_Temporadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox_Competiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox_Competiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton_Estadisticas))
                 .addContainerGap())
         );
 
@@ -417,8 +434,8 @@ public class Principal extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jLabel_Clasificacion, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(230, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -451,6 +468,8 @@ public class Principal extends javax.swing.JPanel {
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
+        //Se actualiza la clasificación después de añadir una jornada
+        cargarTablaClasificacion();
     }//GEN-LAST:event_jButton_AnadirJornadaActionPerformed
 
     private void jComboBox_JornadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_JornadasActionPerformed
@@ -489,12 +508,25 @@ public class Principal extends javax.swing.JPanel {
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
+        //Se actualizan los resultados y la clasificación después de modificar una jornada
+        cargarTablaResultados();
+        cargarTablaClasificacion();
     }//GEN-LAST:event_jButton_ModificarJornadaActionPerformed
+
+    private void jButton_EstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EstadisticasActionPerformed
+        Estadisticas ventana =  new Estadisticas((JFrame) this.getRootPane().getParent(), true, idCompeticion);
+        ventana.setTitle("Estadísticas");
+        ventana.setSize(new Dimension(1000, 700));
+        ventana.setLocationRelativeTo(null);
+        ventana.setModal(true);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_jButton_EstadisticasActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_AnadirJornada;
     private javax.swing.JButton jButton_Anterior;
+    private javax.swing.JButton jButton_Estadisticas;
     private javax.swing.JButton jButton_ModificarJornada;
     private javax.swing.JButton jButton_Siguiente;
     private javax.swing.JComboBox<String> jComboBox_Competiciones;
