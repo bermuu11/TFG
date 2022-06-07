@@ -4,6 +4,8 @@
  */
 package tfg.Alta;
 
+import java.awt.Color;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import tfg.BaseDeDatos;
 
@@ -16,6 +18,7 @@ public class Alta_Equipo extends javax.swing.JDialog {
     public Alta_Equipo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(246, 244, 214));
     }
 
     /**
@@ -45,8 +48,10 @@ public class Alta_Equipo extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Añadir equipo");
 
+        jLabel_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Nombre.setText("Nombre");
 
+        jButton_Anadir.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Anadir.setText("AÑADIR");
         jButton_Anadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -54,6 +59,7 @@ public class Alta_Equipo extends javax.swing.JDialog {
             }
         });
 
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -61,84 +67,96 @@ public class Alta_Equipo extends javax.swing.JDialog {
             }
         });
 
+        jLabel_Estadio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Estadio.setText("Estadio");
 
+        jLabel_Ciudad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Ciudad.setText("Ciudad");
 
+        jLabel_Entrenador.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Entrenador.setText("Entrenador");
 
+        jLabel_Presidente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Presidente.setText("Presidente");
 
-        jLabel_AnoFundacion.setText("Año fundación");
+        jLabel_AnoFundacion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel_AnoFundacion.setText("Año de fundación");
+
+        jTextField_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_Estadio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_Ciudad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_Entrenador.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_Presidente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_AnoFundacion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton_Cancelar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton_Anadir))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel_Nombre))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel_Nombre)
+                            .addComponent(jLabel_Entrenador)
                             .addComponent(jLabel_Estadio)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField_Estadio, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel_Presidente)
-                                    .addComponent(jTextField_Presidente, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(41, 41, 41)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel_AnoFundacion)
-                                    .addComponent(jTextField_AnoFundacion, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(24, 24, 24)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel_Ciudad)
-                                            .addComponent(jTextField_Ciudad, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(68, 68, 68)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel_Entrenador)
-                                            .addComponent(jTextField_Entrenador, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                        .addGap(57, 57, 57)))
-                .addContainerGap())
+                            .addComponent(jTextField_Nombre, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                            .addComponent(jTextField_Entrenador)
+                            .addComponent(jTextField_Estadio))
+                        .addGap(61, 61, 61)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel_Presidente)
+                            .addComponent(jLabel_AnoFundacion)
+                            .addComponent(jLabel_Ciudad)
+                            .addComponent(jTextField_Presidente)
+                            .addComponent(jTextField_AnoFundacion, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField_Ciudad, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(291, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(82, 82, 82)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_Estadio)
-                    .addComponent(jLabel_Nombre)
-                    .addComponent(jLabel_Ciudad)
-                    .addComponent(jLabel_Entrenador))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_Entrenador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Ciudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Estadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(68, 68, 68)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_Presidente)
-                    .addComponent(jLabel_AnoFundacion))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_AnoFundacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Presidente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 232, Short.MAX_VALUE)
+                .addGap(32, 32, 32)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel_Nombre)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_Entrenador)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_Entrenador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_Estadio)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_Estadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel_AnoFundacion)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_AnoFundacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_Presidente)
+                        .addGap(7, 7, 7)
+                        .addComponent(jTextField_Presidente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_Ciudad)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_Ciudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Anadir)
                     .addComponent(jButton_Cancelar))
-                .addContainerGap())
+                .addContainerGap(231, Short.MAX_VALUE))
         );
 
         pack();
@@ -161,6 +179,25 @@ public class Alta_Equipo extends javax.swing.JDialog {
         if (hayError("nombre", nombre)) {
             return;
         }
+
+        //Comprueba si el equipo ya existe antes de añadirlo (solo compara el nombre)
+        ArrayList consulta = BaseDeDatos.getBD().ConsultaSQL("SELECT idEquipo FROM equipo WHERE nombre='" + nombre + "'");
+        if (!consulta.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ya existe un equipo con el mismo nombre.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int anioFundacion;
+        try {
+            anioFundacion = Integer.parseInt(jTextField_AnoFundacion.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "El año de fundación es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String entrenador = jTextField_Entrenador.getText();
+        if (hayError("entrenador", entrenador)) {
+            return;
+        }
         String estadio = jTextField_Estadio.getText();
         if (hayError("estadio", estadio)) {
             return;
@@ -169,18 +206,8 @@ public class Alta_Equipo extends javax.swing.JDialog {
         if (hayError("ciudad", ciudad)) {
             return;
         }
-        String entrenador = jTextField_Entrenador.getText();
-        if (hayError("entrenador", entrenador)) {
-            return;
-        }
         String presidente = jTextField_Presidente.getText();
-        int anioFundacion;
-        try {
-            anioFundacion = Integer.parseInt(jTextField_AnoFundacion.getText());
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "El año de fundación es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+
         BaseDeDatos.getBD().ConsultaSQL("INSERT INTO equipo OVERRIDING SYSTEM VALUE VALUES (null, '" + nombre + "', '" + estadio + "', " + anioFundacion + ", '" + ciudad + "', '" + entrenador + "', '" + presidente + "');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed

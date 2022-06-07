@@ -4,10 +4,8 @@
  */
 package tfg;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.Image;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 
 /**
@@ -19,46 +17,71 @@ public class Inicio extends javax.swing.JFrame {
     /**
      * Creates new form Inicio
      */
+    static Principal principal;
+    static Competiciones competiciones;
+
+    Principal panelPrincipal = new Principal();
     Temporadas panelTemporadas = new Temporadas();
     Ligas panelLigas = new Ligas();
     Competiciones panelCompeticiones = new Competiciones();
     Equipos panelEquipos = new Equipos();
     Jugadores panelJugadores = new Jugadores();
-    Principal panelPrincipal = new Principal();
+
     JScrollPane scrollpane;
-    Component uno;
-    
+
+    static public void temporadaModificada() {
+        principal.temporadaModificada();
+        competiciones.temporadaLigaModificada();
+    }
+
+    static public void ligaModificada() {
+        principal.ligaModificada();
+        competiciones.temporadaLigaModificada();
+    }
+
+    static public void competicionModificada() {
+        principal.competicionModificada();
+    }
+
     public Inicio() {
         initComponents();
         java.awt.GridBagConstraints gridBagConstraints;
         establecerIconos();
-        
+
+        principal = panelPrincipal;
+        competiciones = panelCompeticiones;
+
         scrollpane = new JScrollPane();
         scrollpane.setBounds(panelPrincipal.getX(), panelPrincipal.getY(), panelPrincipal.getWidth(), panelPrincipal.getHeight());
         this.setExtendedState(MAXIMIZED_BOTH);
-        
+
         getContentPane().remove(jPanel2);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 100.0;
-        uno = panelPrincipal;
-        //getContentPane().add(panelPrincipal, gridBagConstraints);
-        //panelPrincipal.setVisible(true);
-        
+
         scrollpane.setViewportView(panelPrincipal);
         add(scrollpane, gridBagConstraints);
-        //this.getContentPane().add(panelPrincipal);
-        //panelPrincipal.setVisible(true);
-        //panel.setBounds(500,500,100,100);
     }
-    
-    public void establecerIconos(){
-        // Cambia el icono de la aplicación
-        setIconImage(new ImageIcon("src/imagenes/icono.png").getImage());
 
-        jButton_Inicio.setIcon(new ImageIcon("src/imagenes/casa1 (1).png"));
+    private ImageIcon icono32x32(String url) {
+        Image imagen = new ImageIcon(getClass().getClassLoader().getResource(url)).getImage();
+        return new ImageIcon(imagen.getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
+    }
+
+    public void establecerIconos() {
+        //Cambia el icono de la aplicación
+        setIconImage(new ImageIcon(getClass().getClassLoader().getResource("imagenes/icono.png")).getImage());
+
+        //Cambia los iconos de los botones principales
+        jButton_Inicio.setIcon(icono32x32("imagenes/inicio.png"));
+        jButton_Temporadas.setIcon(icono32x32("imagenes/temporadas.png"));
+        jButton_Ligas.setIcon(icono32x32("imagenes/icono.png"));
+        jButton_Competiciones.setIcon(icono32x32("imagenes/competiciones.png"));
+        jButton_Equipos.setIcon(icono32x32("imagenes/equipos.png"));
+        jButton_Jugadores.setIcon(icono32x32("imagenes/jugadores.png"));
     }
 
     /**
@@ -81,100 +104,87 @@ public class Inicio extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Fútbol");
+        setTitle("League Manager");
         setMinimumSize(new java.awt.Dimension(500, 300));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 153));
-        jPanel1.setMaximumSize(new java.awt.Dimension(300, 40));
-        jPanel1.setMinimumSize(new java.awt.Dimension(300, 40));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 224));
+        jPanel1.setMaximumSize(new java.awt.Dimension(300, 80));
+        jPanel1.setMinimumSize(new java.awt.Dimension(300, 80));
+        jPanel1.setPreferredSize(new java.awt.Dimension(300, 80));
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 16, 18));
 
-        jButton_Inicio.setBackground(new java.awt.Color(153, 204, 255));
+        jButton_Inicio.setBackground(new java.awt.Color(178, 216, 255));
         jButton_Inicio.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jButton_Inicio.setText("Inicio");
+        jButton_Inicio.setIconTextGap(12);
         jButton_Inicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_InicioActionPerformed(evt);
             }
         });
+        jPanel1.add(jButton_Inicio);
 
+        jButton_Temporadas.setBackground(new java.awt.Color(178, 216, 255));
         jButton_Temporadas.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jButton_Temporadas.setText("Temporadas");
+        jButton_Temporadas.setIconTextGap(12);
         jButton_Temporadas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_TemporadasActionPerformed(evt);
             }
         });
+        jPanel1.add(jButton_Temporadas);
 
+        jButton_Ligas.setBackground(new java.awt.Color(178, 216, 255));
         jButton_Ligas.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jButton_Ligas.setText("Ligas");
+        jButton_Ligas.setIconTextGap(12);
         jButton_Ligas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_LigasActionPerformed(evt);
             }
         });
+        jPanel1.add(jButton_Ligas);
 
+        jButton_Competiciones.setBackground(new java.awt.Color(178, 216, 255));
         jButton_Competiciones.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jButton_Competiciones.setText("Competiciones");
+        jButton_Competiciones.setIconTextGap(12);
         jButton_Competiciones.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_CompeticionesActionPerformed(evt);
             }
         });
+        jPanel1.add(jButton_Competiciones);
 
+        jButton_Equipos.setBackground(new java.awt.Color(178, 216, 255));
         jButton_Equipos.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jButton_Equipos.setText("Equipos");
+        jButton_Equipos.setIconTextGap(12);
         jButton_Equipos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_EquiposActionPerformed(evt);
             }
         });
+        jPanel1.add(jButton_Equipos);
 
+        jButton_Jugadores.setBackground(new java.awt.Color(178, 216, 255));
         jButton_Jugadores.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jButton_Jugadores.setText("Jugadores");
+        jButton_Jugadores.setIconTextGap(12);
         jButton_Jugadores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_JugadoresActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addComponent(jButton_Inicio)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_Temporadas)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_Ligas)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_Competiciones)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Equipos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_Jugadores)
-                .addContainerGap(40, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton_Temporadas)
-                        .addComponent(jButton_Ligas)
-                        .addComponent(jButton_Competiciones)
-                        .addComponent(jButton_Equipos)
-                        .addComponent(jButton_Jugadores))
-                    .addComponent(jButton_Inicio))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jPanel1.add(jButton_Jugadores);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 100.0;
+        gridBagConstraints.weightx = 1.0;
         getContentPane().add(jPanel1, gridBagConstraints);
 
         jPanel2.setBackground(new java.awt.Color(153, 255, 204));
@@ -194,6 +204,7 @@ public class Inicio extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
         getContentPane().add(jPanel2, gridBagConstraints);
 
         pack();

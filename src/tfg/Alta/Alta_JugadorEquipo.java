@@ -4,11 +4,13 @@
  */
 package tfg.Alta;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import tfg.BaseDeDatos;
 
 /**
@@ -20,34 +22,35 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
     int idCompeticion = -1;
     int idEquipo = -1;
     String fechaTraspaso;
-    
+
     ArrayList datos = null;
     SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
     SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
-    
+
     public Alta_JugadorEquipo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    
-    public Alta_JugadorEquipo(java.awt.Frame parent, boolean modal, int idCompeticion, int idEquipo){
+
+    public Alta_JugadorEquipo(java.awt.Frame parent, boolean modal, int idCompeticion, int idEquipo) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(246, 244, 214));
         this.idCompeticion = idCompeticion;
         this.idEquipo = idEquipo;
         cargarJugadores();
     }
-    
-    public void cargarJugadores(){
-        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+
+    public void cargarJugadores() {
+        DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<>();
         String[] registro = null;
         datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idJugador, nombre, apellido1, apellido2 FROM jugador");
-        
-        if(datos != null){
+
+        if (datos != null) {
             int n = datos.size();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datos.get(i);
-                dcbm.addElement(registro[1] +" " +registro[2] +" " +registro[3]);
+                dcbm.addElement(registro[1] + " " + registro[2] + " " + registro[3]);
             }
         }
         jComboBox_Jugadores.setModel(dcbm);
@@ -71,10 +74,13 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        jComboBox_Jugadores.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jComboBox_Jugadores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jLabel_Jugadores.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Jugadores.setText("Jugadores");
 
+        jButton_Anadir.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Anadir.setText("AÑADIR");
         jButton_Anadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -82,6 +88,7 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
             }
         });
 
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -89,45 +96,48 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
             }
         });
 
+        jLabel_FechaTraspaso.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_FechaTraspaso.setText("Fecha de incorporación");
+
+        jTextField_FechaTraspaso.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_Anadir)
-                .addGap(18, 18, 18))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_Jugadores)
-                    .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 154, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_FechaTraspaso)
-                    .addComponent(jTextField_FechaTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(134, 134, 134))
+                .addGap(32, 32, 32)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton_Cancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton_Anadir))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel_Jugadores)
+                            .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(89, 89, 89)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField_FechaTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel_FechaTraspaso))))
+                .addContainerGap(101, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(80, 80, 80)
+                .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel_Jugadores)
                     .addComponent(jLabel_FechaTraspaso))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_FechaTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 143, Short.MAX_VALUE)
+                    .addComponent(jTextField_FechaTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox_Jugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Anadir)
                     .addComponent(jButton_Cancelar))
-                .addContainerGap())
+                .addContainerGap(144, Short.MAX_VALUE))
         );
 
         pack();
@@ -138,11 +148,20 @@ public class Alta_JugadorEquipo extends javax.swing.JDialog {
             Date fecha = formato.parse(jTextField_FechaTraspaso.getText());
             fechaTraspaso = formatoBD.format(fecha);
         } catch (ParseException ex) {
-            //Logger.getLogger(Alta_Jugador.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "El formato de la fecha de trapaso no es correcto. Debe ser 'dd/mm/aaaa'.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
         String[] registro = (String[]) datos.get(jComboBox_Jugadores.getSelectedIndex());
         int idJugador = Integer.parseInt(registro[0]);
-        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO pertenece VALUES ("+idJugador +", " +idEquipo +", " +idCompeticion +", '" +fechaTraspaso +"');");
+
+        //Comprueba si el jugador ya pertenece al equipo antes de añadirlo
+        ArrayList consulta = BaseDeDatos.getBD().ConsultaSQL("SELECT idJugador FROM pertenece WHERE (idCompeticion=" + idCompeticion + ") AND (idEquipo=" + idEquipo + ") AND (idJugador=" + idJugador + ")");
+        if (!consulta.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El jugador ya pertenece a este equipo en esta competición.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO pertenece VALUES (" + idJugador + ", " + idEquipo + ", " + idCompeticion + ", '" + fechaTraspaso + "');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 

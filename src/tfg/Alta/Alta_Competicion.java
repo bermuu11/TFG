@@ -4,9 +4,12 @@
  */
 package tfg.Alta;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import tfg.BaseDeDatos;
+import tfg.Inicio;
 
 /**
  *
@@ -14,44 +17,40 @@ import tfg.BaseDeDatos;
  */
 public class Alta_Competicion extends javax.swing.JDialog {
 
-    private int idTemporada = -1;
-    private int idLiga = -1;
-    private String nombre = "";
-    
     ArrayList datosTemporadas = null;
     ArrayList datosLigas = null;
-    
 
     public Alta_Competicion(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(214, 246, 231));
         cargarTemporadas();
         cargarLigas();
     }
-    
-    public void cargarTemporadas(){
-        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+
+    public void cargarTemporadas() {
+        DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<>();
         String[] registro = null;
         datosTemporadas = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada, anio FROM temporada");
-        
-        if(datosTemporadas != null){
+
+        if (datosTemporadas != null) {
             int n = datosTemporadas.size();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datosTemporadas.get(i);
                 dcbm.addElement(registro[1]);
             }
         }
         jComboBox_Temporadas.setModel(dcbm);
     }
-    
-    public void cargarLigas(){
-        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+
+    public void cargarLigas() {
+        DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<>();
         String[] registro = null;
         datosLigas = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga, nombre FROM liga");
-        
-        if(datosLigas != null){
+
+        if (datosLigas != null) {
             int n = datosLigas.size();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datosLigas.get(i);
                 dcbm.addElement(registro[1]);
             }
@@ -79,16 +78,24 @@ public class Alta_Competicion extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        jLabel_Temporada.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Temporada.setText("Temporada");
 
+        jLabel_Liga.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Liga.setText("Liga");
 
+        jLabel_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Nombre.setText("Nombre");
 
+        jComboBox_Temporadas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jComboBox_Temporadas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jComboBox_Ligas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jComboBox_Ligas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jTextField_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jButton_Anadir.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Anadir.setText("AÑADIR");
         jButton_Anadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -96,6 +103,7 @@ public class Alta_Competicion extends javax.swing.JDialog {
             }
         });
 
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -108,33 +116,30 @@ public class Alta_Competicion extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(42, 42, 42)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_Temporada)
-                    .addComponent(jComboBox_Temporadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(36, 36, 36)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jLabel_Liga)
-                        .addGap(116, 116, 116)
-                        .addComponent(jLabel_Nombre))
+                        .addComponent(jButton_Cancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton_Anadir))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jComboBox_Ligas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(75, 75, 75)
-                        .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(50, 50, 50))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Anadir)
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel_Temporada)
+                            .addComponent(jComboBox_Temporadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(73, 73, 73)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jComboBox_Ligas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel_Liga))
+                        .addGap(65, 65, 65)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel_Nombre))))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(48, 48, 48)
+                .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel_Temporada)
                     .addComponent(jLabel_Liga)
@@ -144,25 +149,40 @@ public class Alta_Competicion extends javax.swing.JDialog {
                     .addComponent(jComboBox_Temporadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox_Ligas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 175, Short.MAX_VALUE)
+                .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Anadir)
                     .addComponent(jButton_Cancelar))
-                .addContainerGap())
+                .addContainerGap(160, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
-        String[] registro = null;
-        registro = (String[]) datosTemporadas.get(jComboBox_Temporadas.getSelectedIndex());
-        idTemporada = Integer.parseInt(registro[0]);
+        String nombre = jTextField_Nombre.getText();
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo nombre es obligatorio.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String[] registro = (String[]) datosTemporadas.get(jComboBox_Temporadas.getSelectedIndex());
+        int idTemporada = Integer.parseInt(registro[0]);
         registro = (String[]) datosLigas.get(jComboBox_Ligas.getSelectedIndex());
-        idLiga = Integer.parseInt(registro[0]);
-        nombre = jTextField_Nombre.getText();
-        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO competicion OVERRIDING SYSTEM VALUE VALUES (null, '" +idTemporada +"', '" +idLiga +"', '" +nombre +"');");
-        this.setVisible(false);
+        int idLiga = Integer.parseInt(registro[0]);
+
+        //Comprueba si la competición ya existe antes de añadirla
+        ArrayList consulta = BaseDeDatos.getBD().ConsultaSQL("SELECT idCompeticion FROM competicion WHERE (idTemporada=" + idTemporada + ") AND (idLiga=" + idLiga + ") AND (nombre='" + nombre + "')");
+        if (consulta.isEmpty()) {
+            BaseDeDatos.getBD().ConsultaSQL("INSERT INTO competicion OVERRIDING SYSTEM VALUE VALUES (null," + idTemporada + "," + idLiga + ",'" + nombre + "');");
+
+            //Informa a los otros módulos del cambio realizado
+            Inicio.competicionModificada();
+
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "La competición " + nombre + " de esa liga ya existe en esa temporada.", "Error", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 
     private void jButton_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelarActionPerformed

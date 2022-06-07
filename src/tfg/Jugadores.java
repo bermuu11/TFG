@@ -11,10 +11,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import tfg.Alta.Alta_Jugador;
-import tfg.InfoModificar.InfoModificar_Jugador;
+import tfg.InfoModificar.Modificar_Jugador;
 
 /**
  *
@@ -58,7 +59,7 @@ public class Jugadores extends javax.swing.JPanel {
 
     public void estadoBotones() {
         boolean habilitado = jTable_Jugadores.getSelectedRow() != -1;
-        jButton_InfoModificar.setEnabled(habilitado);
+        jButton_Modificar.setEnabled(habilitado);
         jButton_Eliminar.setEnabled(habilitado);
     }
 
@@ -106,9 +107,9 @@ public class Jugadores extends javax.swing.JPanel {
         String[] registro = (String[]) datos.get(jTable_Jugadores.getSelectedRow());
         id = Integer.parseInt(registro[0]);
 
-        InfoModificar_Jugador ventana = new InfoModificar_Jugador((JFrame) this.getRootPane().getParent(), true, id);
-        ventana.setTitle("Información jugador");
-        ventana.setSize(new Dimension(1000, 700));
+        Modificar_Jugador ventana = new Modificar_Jugador((JFrame) this.getRootPane().getParent(), true, id);
+        ventana.setTitle("Modificar jugador");
+        ventana.setSize(new Dimension(590, 350));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
@@ -130,7 +131,7 @@ public class Jugadores extends javax.swing.JPanel {
         jTable_Jugadores = new javax.swing.JTable();
         jButton_Crear = new javax.swing.JButton();
         jButton_Eliminar = new javax.swing.JButton();
-        jButton_InfoModificar = new javax.swing.JButton();
+        jButton_Modificar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(242, 255, 242));
         setLayout(new java.awt.GridBagLayout());
@@ -163,6 +164,7 @@ public class Jugadores extends javax.swing.JPanel {
             }
         ));
         jTable_Jugadores.setRowHeight(24);
+        jTable_Jugadores.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable_Jugadores.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_JugadoresMouseClicked(evt);
@@ -215,11 +217,11 @@ public class Jugadores extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
         add(jButton_Eliminar, gridBagConstraints);
 
-        jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
-        jButton_InfoModificar.setText("INFO/MODIFICAR");
-        jButton_InfoModificar.addActionListener(new java.awt.event.ActionListener() {
+        jButton_Modificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Modificar.setText("MODIFICAR");
+        jButton_Modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_InfoModificarActionPerformed(evt);
+                jButton_ModificarActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -227,7 +229,7 @@ public class Jugadores extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
-        add(jButton_InfoModificar, gridBagConstraints);
+        add(jButton_Modificar, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTable_JugadoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_JugadoresMouseClicked
@@ -242,7 +244,7 @@ public class Jugadores extends javax.swing.JPanel {
     private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
         Alta_Jugador ventana = new Alta_Jugador((JFrame) this.getRootPane().getParent(), true);
         ventana.setTitle("Nuevo jugador");
-        ventana.setSize(new Dimension(700, 500));
+        ventana.setSize(new Dimension(590, 350));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
@@ -252,13 +254,24 @@ public class Jugadores extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Jugadores.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM jugador WHERE idJugador = '" + id + "'");
-        cargarTabla();
+
+        ArrayList numeroEquipos = BaseDeDatos.getBD().ConsultaSQL("SELECT COUNT(*) FROM pertenece WHERE idJugador=" + id);
+        registro = (String[]) numeroEquipos.get(0);
+        if (Integer.parseInt(registro[0]) > 0) {
+            JOptionPane.showMessageDialog(this, "No se puede borrar este jugador porque pertenece a algún equipo.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int respuesta = JOptionPane.showOptionDialog(this, "¿Seguro que quiere eliminar este jugador?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"SÍ", "NO"}, "NO");
+        if (respuesta == 0) {
+            datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM jugador WHERE idJugador = " + id);
+            cargarTabla();
+        }
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 
-    private void jButton_InfoModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InfoModificarActionPerformed
+    private void jButton_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ModificarActionPerformed
         masInformacion();
-    }//GEN-LAST:event_jButton_InfoModificarActionPerformed
+    }//GEN-LAST:event_jButton_ModificarActionPerformed
 
     private void jTable_JugadoresPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_JugadoresPropertyChange
         estadoBotones();
@@ -268,7 +281,7 @@ public class Jugadores extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Crear;
     private javax.swing.JButton jButton_Eliminar;
-    private javax.swing.JButton jButton_InfoModificar;
+    private javax.swing.JButton jButton_Modificar;
     private javax.swing.JLabel jLabel_Jugadores;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Jugadores;

@@ -65,7 +65,7 @@ public class Clasificacion {
                 posEquipos.put(idEquipoVisitante, posEquipoVisitante);
                 id[posEquipoVisitante] = idEquipoVisitante; //Se guarda el id asociado a la posicion del equipo visitante
             }
-            
+
             //Se comprueba que el partido esté finalizado y que el número de goles hayan sido introducidos para contabilizar el partido
             if (registro[2] != null && registro[3] != null && registro[4].equals("Finalizado")) {
                 int golesLocal = Integer.parseInt(registro[2]);

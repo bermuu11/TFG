@@ -23,45 +23,45 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jLabel_Dorsal" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Dorsal" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
-                  <Component id="jLabel_Nombre" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Nombre" min="-2" pref="100" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jLabel_Posicion" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Posicion" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
-                  <Component id="jLabel_Apellido1" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Apellido1" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jTextField_Pais" min="-2" pref="100" max="-2" attributes="0"/>
-                  <Component id="jLabel_Pais" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel_Apellido2" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="jTextField_Apellido2" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Component id="jLabel_FechaNacimiento" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="jTextField_Apellido2" pref="160" max="32767" attributes="0"/>
+                              <Component id="jLabel_Nombre" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel_Apellido1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jTextField_Apellido1" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jTextField_Nombre" alignment="0" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jTextField_Pais" min="-2" pref="140" max="-2" attributes="0"/>
+                              <Component id="jLabel_Pais" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel_Posicion" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jTextField_Posicion" min="-2" pref="140" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="jLabel_Dorsal" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="jTextField_FechaNacimiento" max="32767" attributes="0"/>
+                              <Component id="jTextField_Dorsal" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jTextField_FechaNacimiento" min="-2" pref="100" max="-2" attributes="0"/>
-                          <Component id="jLabel_FechaNacimiento" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="jButton_Cancelar" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jButton_Anadir" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
+                  <Component id="jLabel_Apellido2" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="160" max="32767" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
-              <Component id="jButton_Cerrar" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jButton_Anadir" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace pref="48" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -71,103 +71,167 @@
               <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel_Nombre" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel_Apellido1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel_Apellido2" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel_FechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jTextField_Nombre" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Apellido1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Apellido2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_FechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel_Dorsal" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel_Posicion" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel_Pais" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jTextField_Dorsal" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField_Posicion" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField_Nombre" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField_FechaNacimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jTextField_Pais" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="335" max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButton_Anadir" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton_Cerrar" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel_Apellido1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel_Dorsal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel_Posicion" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jTextField_Apellido1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField_Dorsal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jTextField_Posicion" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="jLabel_Apellido2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="jTextField_Apellido2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jButton_Anadir" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButton_Cancelar" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="244" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Component class="javax.swing.JTextField" name="jTextField_Apellido1">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_Pais">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Pa&#xed;s"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField_Apellido2">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField_Dorsal">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_Apellido1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Primer Apellido"/>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Primer apellido"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_Apellido2">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Segundo apellido"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_Dorsal">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Dorsal"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField_FechaNacimiento">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_FechaNacimiento">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Fecha de nacimiento"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_Nombre">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Nombre"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField_Posicion">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_Posicion">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Posici&#xf3;n"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField_Nombre">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextField_Pais">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Segoe UI" size="14" style="0"/>
+        </Property>
+      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton_Anadir">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Microsoft JhengHei" size="14" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="A&#xd1;ADIR"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_AnadirActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton_Cerrar">
+    <Component class="javax.swing.JButton" name="jButton_Cancelar">
       <Properties>
-        <Property name="text" type="java.lang.String" value="CERRAR"/>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Microsoft JhengHei" size="14" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="CANCELAR"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_CerrarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_CancelarActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

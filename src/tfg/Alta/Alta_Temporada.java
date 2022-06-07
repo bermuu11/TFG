@@ -4,8 +4,11 @@
  */
 package tfg.Alta;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import tfg.BaseDeDatos;
+import tfg.Inicio;
 
 /**
  *
@@ -13,13 +16,10 @@ import tfg.BaseDeDatos;
  */
 public class Alta_Temporada extends javax.swing.JDialog {
 
-    private int anio = -1;
-    
-    ArrayList datos = null;
-    
     public Alta_Temporada(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(214, 216, 246));
     }
 
     /**
@@ -38,6 +38,7 @@ public class Alta_Temporada extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        jButton_Anadir.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Anadir.setText("AÑADIR");
         jButton_Anadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -45,6 +46,7 @@ public class Alta_Temporada extends javax.swing.JDialog {
             }
         });
 
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -52,46 +54,70 @@ public class Alta_Temporada extends javax.swing.JDialog {
             }
         });
 
+        jLabel_Anio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Anio.setText("Año");
+
+        jTextField_Anio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_Anio.setMinimumSize(new java.awt.Dimension(7, 26));
+        jTextField_Anio.setName(""); // NOI18N
+        jTextField_Anio.setPreferredSize(new java.awt.Dimension(7, 26));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Anadir)
-                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(192, 192, 192)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField_Anio, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Anio))
-                .addContainerGap(208, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jButton_Cancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton_Anadir))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(97, 97, 97)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel_Anio)
+                            .addComponent(jTextField_Anio, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(114, 114, 114)
+                .addGap(34, 34, 34)
                 .addComponent(jLabel_Anio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField_Anio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_Anadir)
-                    .addComponent(jButton_Cancelar))
-                .addContainerGap())
+                    .addComponent(jButton_Cancelar)
+                    .addComponent(jButton_Anadir))
+                .addGap(26, 26, 26))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
-        anio = Integer.parseInt(jTextField_Anio.getText());
-        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO temporada OVERRIDING SYSTEM VALUE VALUES (null, " +anio +");");
-        this.setVisible(false);
+        int anio;
+
+        try {
+            anio = Integer.parseInt(jTextField_Anio.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "El año es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        //Comprueba si la temporada ya existe antes de añadirla
+        ArrayList consulta = BaseDeDatos.getBD().ConsultaSQL("SELECT idTemporada FROM temporada WHERE anio=" + anio);
+        if (consulta.isEmpty()) {
+            BaseDeDatos.getBD().ConsultaSQL("INSERT INTO temporada OVERRIDING SYSTEM VALUE VALUES (null, " + anio + ");");
+
+            //Informa a los otros módulos del cambio realizado
+            Inicio.temporadaModificada();
+
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "La temporada " + anio + " ya existe.", "Error", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 
     private void jButton_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelarActionPerformed

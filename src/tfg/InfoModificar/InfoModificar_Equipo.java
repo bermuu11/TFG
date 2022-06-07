@@ -4,12 +4,18 @@
  */
 package tfg.InfoModificar;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import tfg.Alta.Alta_JugadorEquipo;
 import tfg.BaseDeDatos;
 
@@ -18,6 +24,9 @@ import tfg.BaseDeDatos;
  * @author Antonio
  */
 public class InfoModificar_Equipo extends javax.swing.JDialog {
+
+    private static final SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat formatoBD = new SimpleDateFormat("yyyy-MM-dd");
 
     private class miTablaModel extends DefaultTableModel {
 
@@ -43,7 +52,10 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     public InfoModificar_Equipo(java.awt.Frame parent, boolean modal, int idEquipo) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(246, 244, 214));
         this.idEquipo = idEquipo;
+        estiloJLabel();
+        estiloJTable();
         modificar();
         cargarDatos();
         cargarCompeticiones();
@@ -57,8 +69,23 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         estadoBotones();
     }
 
+    public void estiloJLabel() {
+        jTextField_Nombre.setDisabledTextColor(Color.DARK_GRAY);
+        jTextField_Estadio.setDisabledTextColor(Color.DARK_GRAY);
+        jTextField_Ciudad.setDisabledTextColor(Color.DARK_GRAY);
+        jTextField_Entrenador.setDisabledTextColor(Color.DARK_GRAY);
+        jTextField_Presidente.setDisabledTextColor(Color.DARK_GRAY);
+        jTextField_AnoFundacion.setDisabledTextColor(Color.DARK_GRAY);
+    }
+
+    public void estiloJTable() {
+        JTableHeader header = jTable_Jugadores.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        jTable_Jugadores.setFillsViewportHeight(true); // para que el fondo se use en todo
+    }
+
     public void estadoBotones() {
-        boolean habilitado = jTable_Jugadores.getSelectedRow() != -1;
+        boolean habilitado = jTable_Jugadores.getSelectedRow() != -1 && modificar == true;
         jButton_EliminarJugador.setEnabled(habilitado);
     }
 
@@ -71,7 +98,9 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
             jTextField_Entrenador.setEnabled(false);
             jTextField_Presidente.setEnabled(false);
             jButton_Cancelar.setVisible(false);
+            jButton_AnadirJugador.setEnabled(false);
             jButton_Modificar.setText("MODIFICAR");
+            setTitle("Información del equipo");
         } else {
             jTextField_Nombre.setEnabled(true);
             jTextField_Estadio.setEnabled(true);
@@ -81,7 +110,10 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
             jTextField_Presidente.setEnabled(true);
             jButton_Modificar.setText("GUARDAR");
             jButton_Cancelar.setVisible(true);
+            jButton_AnadirJugador.setEnabled(datosCompeticion.size() > 0); // solo se puede añadir si hay competición
+            setTitle("Información del equipo (modificando)");
         }
+        estadoBotones();
     }
 
     public void cargarDatos() {
@@ -98,22 +130,23 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     }
 
     public void cargarCompeticiones() {
-        DefaultComboBoxModel dcbm = new DefaultComboBoxModel();
+        DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<>();
         String[] registro = null;
-        datosCompeticion = BaseDeDatos.getBD().ConsultaSQL("SELECT idCompeticion, nombre FROM competicion C, compite CE WHERE (CE.idCompeticion = C.idCompeticion) AND (CE.idEquipo = " + idEquipo + ");");
+        datosCompeticion = BaseDeDatos.getBD().ConsultaSQL("SELECT C.idCompeticion, C.nombre, T.anio FROM competicion C, compite CE, temporada T WHERE (CE.idCompeticion = C.idCompeticion) AND (CE.idEquipo = " + idEquipo + ") AND (C.idTemporada = T.idTemporada);");
 
         if (datosCompeticion != null) {
             int n = datosCompeticion.size();
             for (int i = 0; i < n; i++) {
                 registro = (String[]) datosCompeticion.get(i);
-                dcbm.addElement(registro[1]);
+                int anio = Integer.parseInt(registro[2]);
+                dcbm.addElement(registro[1] +" " + anio + "-" + (anio + 1));
             }
         }
         jComboBox_Competicion.setModel(dcbm);
-        if (datosCompeticion.size() > 0) {
-            idCompeticion = Integer.parseInt(registro[0]); //identificador de la ultima competicion leida
-        } else {
+        if (datosCompeticion.isEmpty()) {
             idCompeticion = -1;
+        } else {
+            idCompeticion = Integer.parseInt(registro[0]); //identificador de la ultima competicion leida
         }
     }
 
@@ -135,6 +168,18 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
                 int n = datosJugador.size();
                 for (int i = 0; i < n; i++) {
                     registro = (String[]) datosJugador.get(i);
+
+                    try {
+                        Date fecha = formatoBD.parse(registro[4]);
+                        registro[4] = formato.format(fecha);
+                    } catch (Exception ex) {
+                    }
+                    try {
+                        Date fecha = formatoBD.parse(registro[7]);
+                        registro[7] = formato.format(fecha);
+                    } catch (Exception ex) {
+                    }
+
                     Object[] fila = new Object[]{
                         registro[1],
                         registro[2] + " " + registro[3],
@@ -148,6 +193,10 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
             }
         }
         jTable_Jugadores.setModel(dtm);
+
+        //Se cambia el tamaño de la columna Fecha de nacimiento
+        TableColumn tc = jTable_Jugadores.getColumn("Fecha de nacimiento");
+        tc.setPreferredWidth(100);
     }
 
     /**
@@ -158,60 +207,236 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-        jTextField_Nombre = new javax.swing.JTextField();
-        jTextField_Estadio = new javax.swing.JTextField();
-        jTextField_Ciudad = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
         jLabel_Nombre = new javax.swing.JLabel();
-        jTextField_Entrenador = new javax.swing.JTextField();
-        jTextField_Presidente = new javax.swing.JTextField();
-        jTextField_AnoFundacion = new javax.swing.JTextField();
+        jTextField_Nombre = new javax.swing.JTextField();
         jLabel_Estadio = new javax.swing.JLabel();
+        jTextField_Estadio = new javax.swing.JTextField();
         jLabel_Ciudad = new javax.swing.JLabel();
+        jTextField_Ciudad = new javax.swing.JTextField();
         jLabel_Entrenador = new javax.swing.JLabel();
+        jTextField_Entrenador = new javax.swing.JTextField();
         jLabel_Presidente = new javax.swing.JLabel();
+        jTextField_Presidente = new javax.swing.JTextField();
         jLabel_AnoFundacion = new javax.swing.JLabel();
-        jButton_Modificar = new javax.swing.JButton();
-        jButton_Cerrar = new javax.swing.JButton();
+        jTextField_AnoFundacion = new javax.swing.JTextField();
         jLabel_Jugadores = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel_Competicion = new javax.swing.JLabel();
+        jComboBox_Competicion = new javax.swing.JComboBox<>();
+        jButton_EliminarJugador = new javax.swing.JButton();
+        jButton_AnadirJugador = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Jugadores = new javax.swing.JTable();
-        jButton_AnadirJugador = new javax.swing.JButton();
-        jButton_EliminarJugador = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jButton_Cerrar = new javax.swing.JButton();
         jButton_Cancelar = new javax.swing.JButton();
-        jComboBox_Competicion = new javax.swing.JComboBox<>();
-        jLabel_Competicion = new javax.swing.JLabel();
+        jButton_Modificar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel_Nombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_Nombre.setText("Nombre");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 208, 0, 0);
+        jPanel1.add(jLabel_Nombre, gridBagConstraints);
 
+        jTextField_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_Nombre.setMinimumSize(new java.awt.Dimension(136, 32));
+        jTextField_Nombre.setPreferredSize(new java.awt.Dimension(136, 32));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 208, 0, 0);
+        jPanel1.add(jTextField_Nombre, gridBagConstraints);
+
+        jLabel_Estadio.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_Estadio.setText("Estadio");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 24, 0, 0);
+        jPanel1.add(jLabel_Estadio, gridBagConstraints);
 
+        jTextField_Estadio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_Estadio.setMinimumSize(new java.awt.Dimension(136, 32));
+        jTextField_Estadio.setPreferredSize(new java.awt.Dimension(136, 32));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 24, 0, 0);
+        jPanel1.add(jTextField_Estadio, gridBagConstraints);
+
+        jLabel_Ciudad.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_Ciudad.setText("Ciudad");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 24, 0, 0);
+        jPanel1.add(jLabel_Ciudad, gridBagConstraints);
 
+        jTextField_Ciudad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_Ciudad.setMinimumSize(new java.awt.Dimension(136, 32));
+        jTextField_Ciudad.setPreferredSize(new java.awt.Dimension(136, 32));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 24, 0, 0);
+        jPanel1.add(jTextField_Ciudad, gridBagConstraints);
+
+        jLabel_Entrenador.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_Entrenador.setText("Entrenador");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 24, 0, 0);
+        jPanel1.add(jLabel_Entrenador, gridBagConstraints);
 
+        jTextField_Entrenador.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_Entrenador.setMinimumSize(new java.awt.Dimension(136, 32));
+        jTextField_Entrenador.setPreferredSize(new java.awt.Dimension(136, 32));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 24, 0, 0);
+        jPanel1.add(jTextField_Entrenador, gridBagConstraints);
+
+        jLabel_Presidente.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_Presidente.setText("Presidente");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 24, 0, 0);
+        jPanel1.add(jLabel_Presidente, gridBagConstraints);
 
+        jTextField_Presidente.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_Presidente.setMinimumSize(new java.awt.Dimension(136, 32));
+        jTextField_Presidente.setPreferredSize(new java.awt.Dimension(136, 32));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 24, 0, 0);
+        jPanel1.add(jTextField_Presidente, gridBagConstraints);
+
+        jLabel_AnoFundacion.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_AnoFundacion.setText("Año fundación");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 24, 0, 208);
+        jPanel1.add(jLabel_AnoFundacion, gridBagConstraints);
 
-        jButton_Modificar.setText("MODIFICAR");
-        jButton_Modificar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_ModificarActionPerformed(evt);
-            }
-        });
+        jTextField_AnoFundacion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField_AnoFundacion.setMinimumSize(new java.awt.Dimension(136, 32));
+        jTextField_AnoFundacion.setPreferredSize(new java.awt.Dimension(136, 32));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 24, 0, 208);
+        jPanel1.add(jTextField_AnoFundacion, gridBagConstraints);
 
-        jButton_Cerrar.setText("CERRAR");
-        jButton_Cerrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_CerrarActionPerformed(evt);
-            }
-        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(32, 0, 0, 0);
+        getContentPane().add(jPanel1, gridBagConstraints);
 
+        jLabel_Jugadores.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel_Jugadores.setText("Jugadores");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 20, 0, 0);
+        getContentPane().add(jLabel_Jugadores, gridBagConstraints);
 
+        jPanel3.setOpaque(false);
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        jLabel_Competicion.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel_Competicion.setText("Competición");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 5, 0, 0);
+        jPanel3.add(jLabel_Competicion, gridBagConstraints);
+
+        jComboBox_Competicion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jComboBox_Competicion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox_Competicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox_CompeticionActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        jPanel3.add(jComboBox_Competicion, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 0, 0);
+        getContentPane().add(jPanel3, gridBagConstraints);
+
+        jButton_EliminarJugador.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_EliminarJugador.setText("ELIMINAR JUGADOR");
+        jButton_EliminarJugador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EliminarJugadorActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 0, 8, 16);
+        getContentPane().add(jButton_EliminarJugador, gridBagConstraints);
+
+        jButton_AnadirJugador.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_AnadirJugador.setText("AÑADIR JUGADOR");
+        jButton_AnadirJugador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_AnadirJugadorActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 0, 8, 16);
+        getContentPane().add(jButton_AnadirJugador, gridBagConstraints);
+
+        jTable_Jugadores.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable_Jugadores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -223,6 +448,8 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable_Jugadores.setRowHeight(24);
+        jTable_Jugadores.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable_Jugadores.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_JugadoresMouseClicked(evt);
@@ -235,129 +462,71 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(jTable_Jugadores);
 
-        jButton_AnadirJugador.setText("AÑADIR JUGADOR");
-        jButton_AnadirJugador.addActionListener(new java.awt.event.ActionListener() {
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 16, 0, 16);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
+
+        jPanel2.setOpaque(false);
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jButton_Cerrar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Cerrar.setText("CERRAR");
+        jButton_Cerrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_AnadirJugadorActionPerformed(evt);
+                jButton_CerrarActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 16, 0);
+        jPanel2.add(jButton_Cerrar, gridBagConstraints);
 
-        jButton_EliminarJugador.setText("ELIMINAR JUGADOR");
-        jButton_EliminarJugador.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_EliminarJugadorActionPerformed(evt);
-            }
-        });
-
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_CancelarActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 0, 16, 16);
+        jPanel2.add(jButton_Cancelar, gridBagConstraints);
 
-        jComboBox_Competicion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox_Competicion.addActionListener(new java.awt.event.ActionListener() {
+        jButton_Modificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Modificar.setText("MODIFICAR");
+        jButton_Modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox_CompeticionActionPerformed(evt);
+                jButton_ModificarActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 0, 16, 16);
+        jPanel2.add(jButton_Modificar, gridBagConstraints);
 
-        jLabel_Competicion.setText("Competicion");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(jButton_Cerrar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Modificar)
-                .addGap(25, 25, 25))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(73, 73, 73)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Nombre)
-                            .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(65, 65, 65)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Estadio)
-                            .addComponent(jTextField_Estadio, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(44, 44, 44)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Ciudad)
-                            .addComponent(jTextField_Ciudad, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(41, 41, 41)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Entrenador)
-                            .addComponent(jTextField_Entrenador, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(47, 47, 47)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Presidente)
-                            .addComponent(jTextField_Presidente, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(50, 50, 50))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Competicion)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jComboBox_Competicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton_EliminarJugador)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField_AnoFundacion, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_AnoFundacion)
-                    .addComponent(jButton_AnadirJugador))
-                .addContainerGap(57, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_Jugadores)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 847, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(51, 51, 51))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_Nombre)
-                    .addComponent(jLabel_Estadio)
-                    .addComponent(jLabel_Ciudad)
-                    .addComponent(jLabel_Entrenador)
-                    .addComponent(jLabel_Presidente)
-                    .addComponent(jLabel_AnoFundacion))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Estadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Ciudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Entrenador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Presidente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_AnoFundacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_Jugadores)
-                    .addComponent(jLabel_Competicion))
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_AnadirJugador)
-                    .addComponent(jButton_EliminarJugador)
-                    .addComponent(jComboBox_Competicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_Modificar)
-                    .addComponent(jButton_Cerrar)
-                    .addComponent(jButton_Cancelar))
-                .addGap(24, 24, 24))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        getContentPane().add(jPanel2, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -379,6 +548,14 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
             if (hayError("nombre", nombre)) {
                 return;
             }
+
+            //Comprueba si el equipo ya existe antes de modificarlo (solo compara el nombre)
+            ArrayList consulta = BaseDeDatos.getBD().ConsultaSQL("SELECT idEquipo FROM equipo WHERE (nombre='" + nombre + "') AND (idEquipo!=" + idEquipo + ")");
+            if (!consulta.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ya existe un equipo con el mismo nombre.", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             String estadio = jTextField_Estadio.getText();
             if (hayError("estadio", estadio)) {
                 return;
@@ -400,7 +577,7 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
                 return;
             }
             //Si todo ha ido bien actualiza el equipo y finaliza el modo modificación
-            BaseDeDatos.getBD().ConsultaSQL("UPDATE equipo SET nombre='" + nombre + "',estadio='" + estadio + "',anioFundacion="+anioFundacion+",ciudad='" + ciudad + "',entrenador='" + entrenador + "',presidente='" + presidente + "' WHERE idEquipo=" + idEquipo);
+            BaseDeDatos.getBD().ConsultaSQL("UPDATE equipo SET nombre='" + nombre + "',estadio='" + estadio + "',anioFundacion=" + anioFundacion + ",ciudad='" + ciudad + "',entrenador='" + entrenador + "',presidente='" + presidente + "' WHERE idEquipo=" + idEquipo);
             modificar = false;
             modificar();
             cargarDatos();
@@ -412,18 +589,8 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton_CerrarActionPerformed
 
     private void jTable_JugadoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_JugadoresMouseClicked
-        if (evt.getClickCount() == 1) {
+        if (evt.getClickCount() == 1 && modificar == true) {
             estadoBotones();
-        }
-        if (evt.getClickCount() == 2) {
-            String[] registro = (String[]) datosJugador.get(jTable_Jugadores.getSelectedRow());
-            int idJugador = Integer.parseInt(registro[0]);
-            InfoModificar_Jugador ventana = new InfoModificar_Jugador((JFrame) this.getRootPane().getParent().getParent(), true, idJugador);
-            ventana.setTitle("Información jugador");
-            ventana.setSize(new Dimension(700, 500));
-            ventana.setLocationRelativeTo(null);
-            ventana.setModal(true);
-            ventana.setVisible(true);
         }
     }//GEN-LAST:event_jTable_JugadoresMouseClicked
 
@@ -433,7 +600,7 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
 
         Alta_JugadorEquipo ventana = new Alta_JugadorEquipo((JFrame) this.getRootPane().getParent().getParent(), true, idCompeticion, idEquipo);
         ventana.setTitle("Añadir jugador");
-        ventana.setSize(new Dimension(500, 300));
+        ventana.setSize(new Dimension(500, 225));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
@@ -446,10 +613,13 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton_CancelarActionPerformed
 
     private void jButton_EliminarJugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarJugadorActionPerformed
-        String[] registro = (String[]) datosJugador.get(jTable_Jugadores.getSelectedRow());
-        int idJugador = Integer.parseInt(registro[0]);
-        BaseDeDatos.getBD().ConsultaSQL("DELETE FROM pertenece WHERE (idJugador = '" + idJugador + "') AND (idCompeticion = " + idCompeticion + ") AND (idEquipo = " + idEquipo + ");");
-        cargarTabla(idCompeticion, idEquipo);
+        int respuesta = JOptionPane.showOptionDialog(this, "¿Seguro que quiere eliminar este jugador del equipo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"SÍ", "NO"}, "NO");
+        if (respuesta == 0) {
+            String[] registro = (String[]) datosJugador.get(jTable_Jugadores.getSelectedRow());
+            int idJugador = Integer.parseInt(registro[0]);
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM pertenece WHERE (idJugador = '" + idJugador + "') AND (idCompeticion = " + idCompeticion + ") AND (idEquipo = " + idEquipo + ");");
+            cargarTabla(idCompeticion, idEquipo);
+        }
     }//GEN-LAST:event_jButton_EliminarJugadorActionPerformed
 
     private void jComboBox_CompeticionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_CompeticionActionPerformed
@@ -519,6 +689,9 @@ public class InfoModificar_Equipo extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel_Jugadores;
     private javax.swing.JLabel jLabel_Nombre;
     private javax.swing.JLabel jLabel_Presidente;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Jugadores;
     private javax.swing.JTextField jTextField_AnoFundacion;

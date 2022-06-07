@@ -72,6 +72,7 @@
               </Table>
             </Property>
             <Property name="rowHeight" type="int" value="24"/>
+            <Property name="selectionMode" type="int" value="0"/>
           </Properties>
           <Events>
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTable_EquiposMouseClicked"/>
@@ -101,7 +102,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Microsoft JhengHei" size="14" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="INFO/MODIFICAR"/>
+        <Property name="text" type="java.lang.String" value="CONSULTAR / MODIFICAR"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_InfoModificarActionPerformed"/>

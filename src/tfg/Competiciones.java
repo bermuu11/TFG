@@ -4,12 +4,13 @@
  */
 package tfg;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import tfg.Alta.Alta_Competicion;
 import tfg.InfoModificar.InfoModificar_Competicion;
 
@@ -18,64 +19,81 @@ import tfg.InfoModificar.InfoModificar_Competicion;
  * @author Antonio
  */
 public class Competiciones extends javax.swing.JPanel {
-    private class miTablaModel extends DefaultTableModel{
-        public boolean isCellEditable (int row, int column){
+
+    private class miTablaModel extends DefaultTableModel {
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
             return false;
         }
     }
-    
+
     int id = -1;
-    
+
     ArrayList datos = null;
-        
+
     public Competiciones() {
         initComponents();
-        cargarTabla();
         estiloJLabel();
-        jButton_Eliminar.setEnabled(false);
+        estiloJTable();
+        cargarTabla();
+        estadoBotones();
     }
-    
-    public void cargarTabla(){
+
+    public void estiloJLabel() {
+        jLabel_Competiciones.setFont(new Font("Segoe UI", Font.BOLD, 50));
+        jLabel_Competiciones.setOpaque(true);
+    }
+
+    public void estiloJTable() {
+        JTableHeader header = jTable_Competiciones.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        jTable_Competiciones.setFillsViewportHeight(true); // para que el fondo se use en todo
+    }
+
+    public void temporadaLigaModificada() {
+        //Recarga las competiciones por si la temporada o la liga a la que corresponden ha cambiado
+        cargarTabla();
+    }
+
+    public void estadoBotones() {
+        boolean habilitado = jTable_Competiciones.getSelectedRow() != -1;
+        jButton_InfoModificar.setEnabled(habilitado);
+        jButton_Eliminar.setEnabled(habilitado);
+    }
+
+    public void cargarTabla() {
         String[] registro = null;
-        
+
         miTablaModel dtm = new miTablaModel();
-        dtm.addColumn("ID");
         dtm.addColumn("Temporada");
         dtm.addColumn("Liga");
         dtm.addColumn("Nombre");
-                
-        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT C.idCompeticion, T.anio, L.nombre, C.nombre\n" +
-        "FROM temporada T, liga L, competicion C WHERE T.idTemporada = C.idTemporada AND L.idLiga = C.idLiga");
-        
-        if(datos != null){
+
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT C.idCompeticion, T.anio, L.nombre, C.nombre\n"
+                + "FROM temporada T, liga L, competicion C WHERE T.idTemporada = C.idTemporada AND L.idLiga = C.idLiga");
+
+        if (datos != null) {
             int n = datos.size();
-            for(int i = 0; i < n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datos.get(i);
                 Object[] fila = new Object[]{
-                    registro[0],
                     registro[1],
                     registro[2],
                     registro[3]
                 };
-                dtm.addRow(fila); 
+                dtm.addRow(fila);
             }
         }
-        
+
         jTable_Competiciones.setModel(dtm);
     }
-    
-    public void estiloJLabel(){
-        jLabel_Competiciones.setFont(new Font("Verdana", 0, 50));
-        jLabel_Competiciones.setOpaque(true);
-        jLabel_Competiciones.setBackground(Color.yellow);
-    }
-    
-    private void masInformacion(){
+
+    private void masInformacion() {
         String[] registro = (String[]) datos.get(jTable_Competiciones.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        
-        InfoModificar_Competicion ventana =  new InfoModificar_Competicion((JFrame) this.getRootPane().getParent(), true, id);
-        ventana.setTitle("Información competición");
+
+        InfoModificar_Competicion ventana = new InfoModificar_Competicion((JFrame) this.getRootPane().getParent(), true, id);
         ventana.setSize(new Dimension(1000, 700));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
@@ -91,7 +109,11 @@ public class Competiciones extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Competiciones = new javax.swing.JTable();
         jLabel_Competiciones = new javax.swing.JLabel();
@@ -99,6 +121,16 @@ public class Competiciones extends javax.swing.JPanel {
         jButton_Eliminar = new javax.swing.JButton();
         jButton_InfoModificar = new javax.swing.JButton();
 
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setBackground(new java.awt.Color(246, 255, 225));
+        setLayout(new java.awt.GridBagLayout());
+
+        jTable_Competiciones.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jTable_Competiciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -110,17 +142,45 @@ public class Competiciones extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable_Competiciones.setRowHeight(24);
+        jTable_Competiciones.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable_Competiciones.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_CompeticionesMouseClicked(evt);
             }
         });
+        jTable_Competiciones.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTable_CompeticionesPropertyChange(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable_Competiciones);
 
-        jLabel_Competiciones.setBackground(new java.awt.Color(255, 255, 51));
-        jLabel_Competiciones.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 16, 16);
+        add(jScrollPane1, gridBagConstraints);
+
+        jLabel_Competiciones.setBackground(new java.awt.Color(214, 246, 231));
+        jLabel_Competiciones.setForeground(new java.awt.Color(44, 156, 115));
+        jLabel_Competiciones.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel_Competiciones.setText("Competiciones");
+        jLabel_Competiciones.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 16, 8, 0));
         jLabel_Competiciones.setMaximumSize(new java.awt.Dimension(2300, 300));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 8, 8, 8);
+        add(jLabel_Competiciones, gridBagConstraints);
 
         jButton_Crear.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Crear.setText("CREAR NUEVA");
@@ -129,6 +189,13 @@ public class Competiciones extends javax.swing.JPanel {
                 jButton_CrearActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Crear, gridBagConstraints);
 
         jButton_Eliminar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Eliminar.setText("ELIMINAR");
@@ -137,55 +204,32 @@ public class Competiciones extends javax.swing.JPanel {
                 jButton_EliminarActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Eliminar, gridBagConstraints);
 
         jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
-        jButton_InfoModificar.setText("INFO/MODIFICAR");
+        jButton_InfoModificar.setText("CONSULTAR / MODIFICAR");
         jButton_InfoModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_InfoModificarActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel_Competiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 873, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jButton_Crear)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton_InfoModificar)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton_Eliminar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(75, 75, 75)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(415, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jLabel_Competiciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_Crear)
-                    .addComponent(jButton_Eliminar)
-                    .addComponent(jButton_InfoModificar))
-                .addContainerGap(44, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_InfoModificar, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
-        Alta_Competicion ventana =  new Alta_Competicion((JFrame) this.getRootPane().getParent(), true);
+        Alta_Competicion ventana = new Alta_Competicion((JFrame) this.getRootPane().getParent(), true);
         ventana.setTitle("Nueva competición");
-        ventana.setSize(new Dimension(500, 300));
+        ventana.setSize(new Dimension(525, 200));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
@@ -195,13 +239,37 @@ public class Competiciones extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Competiciones.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM competicion WHERE idCompeticion = '" +id +"'");
-        cargarTabla();
+
+        ArrayList numeroPartidos = BaseDeDatos.getBD().ConsultaSQL("SELECT COUNT(*) FROM partido WHERE idCompeticion=" + id);
+        registro = (String[]) numeroPartidos.get(0);
+        if (Integer.parseInt(registro[0]) > 0) {
+            JOptionPane.showMessageDialog(this, "No se puede borrar esta competición porque tiene partidos jugados.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int respuesta = JOptionPane.showOptionDialog(this, "¿Seguro que quiere eliminar esta competición?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"SÍ", "NO"}, "NO");
+        if (respuesta == 0) {
+
+            //Se borra los equipos de la competición
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM compite WHERE idCompeticion = " + id);
+            //Se borra la pertencia de los jugadores de todos los equipos de la competición
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM pertenece WHERE idCompeticion = " + id);
+            //Se borra la clasificación de todos los equipos de la competición
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM clasifica WHERE idCompeticion = " + id);
+            //Se borra la competición
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM competicion WHERE idCompeticion = " + id);
+            cargarTabla();
+            //Informa a los otros módulos del cambio realizado
+            Inicio.competicionModificada();
+        }
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 
     private void jTable_CompeticionesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_CompeticionesMouseClicked
-        if(evt.getClickCount()==1){
-            jButton_Eliminar.setEnabled(true);
+        if (evt.getClickCount() == 1) {
+            estadoBotones();
+        }
+        if (evt.getClickCount() == 2) {
+            masInformacion();
         }
     }//GEN-LAST:event_jTable_CompeticionesMouseClicked
 
@@ -209,12 +277,19 @@ public class Competiciones extends javax.swing.JPanel {
         masInformacion();
     }//GEN-LAST:event_jButton_InfoModificarActionPerformed
 
+    private void jTable_CompeticionesPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_CompeticionesPropertyChange
+        estadoBotones();
+    }//GEN-LAST:event_jTable_CompeticionesPropertyChange
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Crear;
     private javax.swing.JButton jButton_Eliminar;
     private javax.swing.JButton jButton_InfoModificar;
     private javax.swing.JLabel jLabel_Competiciones;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Competiciones;
     // End of variables declaration//GEN-END:variables

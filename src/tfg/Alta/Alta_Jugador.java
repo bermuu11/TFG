@@ -4,6 +4,7 @@
  */
 package tfg.Alta;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Alta_Jugador extends javax.swing.JDialog {
     public Alta_Jugador(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(214, 239, 246));
     }
 
     /**
@@ -51,24 +53,46 @@ public class Alta_Jugador extends javax.swing.JDialog {
         jTextField_Nombre = new javax.swing.JTextField();
         jTextField_Pais = new javax.swing.JTextField();
         jButton_Anadir = new javax.swing.JButton();
-        jButton_Cerrar = new javax.swing.JButton();
+        jButton_Cancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        jTextField_Apellido1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jLabel_Pais.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Pais.setText("País");
 
-        jLabel_Apellido1.setText("Primer Apellido");
+        jTextField_Apellido2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
+        jTextField_Dorsal.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jLabel_Apellido1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel_Apellido1.setText("Primer apellido");
+
+        jLabel_Apellido2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Apellido2.setText("Segundo apellido");
 
+        jLabel_Dorsal.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Dorsal.setText("Dorsal");
 
+        jTextField_FechaNacimiento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jLabel_FechaNacimiento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_FechaNacimiento.setText("Fecha de nacimiento");
 
+        jLabel_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Nombre.setText("Nombre");
 
+        jTextField_Posicion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jLabel_Posicion.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Posicion.setText("Posición");
 
+        jTextField_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_Pais.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jButton_Anadir.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Anadir.setText("AÑADIR");
         jButton_Anadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -76,10 +100,11 @@ public class Alta_Jugador extends javax.swing.JDialog {
             }
         });
 
-        jButton_Cerrar.setText("CERRAR");
-        jButton_Cerrar.addActionListener(new java.awt.event.ActionListener() {
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Cancelar.setText("CANCELAR");
+        jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_CerrarActionPerformed(evt);
+                jButton_CancelarActionPerformed(evt);
             }
         });
 
@@ -90,35 +115,34 @@ public class Alta_Jugador extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_Dorsal)
-                    .addComponent(jTextField_Dorsal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Nombre)
-                    .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_Posicion)
-                    .addComponent(jTextField_Posicion, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Apellido1)
-                    .addComponent(jTextField_Apellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(41, 41, 41)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField_Pais, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Pais)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel_Apellido2)
-                            .addComponent(jTextField_Apellido2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(32, 32, 32)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField_FechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel_FechaNacimiento))))
-                .addContainerGap(160, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cerrar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Anadir)
-                .addContainerGap())
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel_FechaNacimiento)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jTextField_Apellido2, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                                .addComponent(jLabel_Nombre, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel_Apellido1, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jTextField_Apellido1, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jTextField_Nombre, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addGap(42, 42, 42)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jTextField_Pais, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel_Pais)
+                                .addComponent(jLabel_Posicion)
+                                .addComponent(jTextField_Posicion, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(40, 40, 40)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel_Dorsal)
+                                    .addGap(86, 86, 86))
+                                .addComponent(jTextField_FechaNacimiento)
+                                .addComponent(jTextField_Dorsal)))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jButton_Cancelar)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButton_Anadir)))
+                    .addComponent(jLabel_Apellido2))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,30 +150,32 @@ public class Alta_Jugador extends javax.swing.JDialog {
                 .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel_Nombre)
-                    .addComponent(jLabel_Apellido1)
-                    .addComponent(jLabel_Apellido2)
-                    .addComponent(jLabel_FechaNacimiento))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Apellido1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Apellido2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_FechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_Dorsal)
-                    .addComponent(jLabel_Posicion)
+                    .addComponent(jLabel_FechaNacimiento)
                     .addComponent(jLabel_Pais))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_Dorsal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_Posicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_FechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField_Pais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 335, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel_Apellido1)
+                    .addComponent(jLabel_Dorsal)
+                    .addComponent(jLabel_Posicion))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField_Apellido1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_Dorsal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_Posicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel_Apellido2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTextField_Apellido2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Anadir)
-                    .addComponent(jButton_Cerrar))
-                .addContainerGap())
+                    .addComponent(jButton_Cancelar))
+                .addGap(244, 244, 244))
         );
 
         pack();
@@ -176,7 +202,15 @@ public class Alta_Jugador extends javax.swing.JDialog {
         if (hayError("segundo apellido", apellido2)) {
             return;
         }
-        String fechaNacimiento = "";
+        String pais = jTextField_Pais.getText();
+        if (hayError("país", pais)) {
+            return;
+        }
+        String posicion = jTextField_Posicion.getText();
+        if (hayError("posición", posicion)) {
+            return;
+        }
+        String fechaNacimiento;
         try {
             Date fecha = formato.parse(jTextField_FechaNacimiento.getText());
             fechaNacimiento = formatoBD.format(fecha);
@@ -191,23 +225,15 @@ public class Alta_Jugador extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "El dorsal es incorrecto.", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String posicion = jTextField_Posicion.getText();
-        if (hayError("posición", posicion)) {
-            return;
-        }
-        String pais = jTextField_Pais.getText();
-        if (hayError("país", pais)) {
-            return;
-        }
 
         // Todo ha ido bien y puede insertar en la base de datos
         BaseDeDatos.getBD().ConsultaSQL("INSERT INTO jugador OVERRIDING SYSTEM VALUE VALUES (null, '" + nombre + "', '" + apellido1 + "', '" + apellido2 + "', " + dorsal + ", '" + fechaNacimiento + "', '" + posicion + "', '" + pais + "');");
         this.setVisible(false);
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 
-    private void jButton_CerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CerrarActionPerformed
+    private void jButton_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelarActionPerformed
         this.setVisible(false);
-    }//GEN-LAST:event_jButton_CerrarActionPerformed
+    }//GEN-LAST:event_jButton_CancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -253,7 +279,7 @@ public class Alta_Jugador extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Anadir;
-    private javax.swing.JButton jButton_Cerrar;
+    private javax.swing.JButton jButton_Cancelar;
     private javax.swing.JLabel jLabel_Apellido1;
     private javax.swing.JLabel jLabel_Apellido2;
     private javax.swing.JLabel jLabel_Dorsal;

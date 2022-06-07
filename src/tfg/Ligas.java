@@ -4,13 +4,15 @@
  */
 package tfg;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import tfg.Alta.Alta_Liga;
+import tfg.InfoModificar.Modificar_Liga;
 
 /**
  *
@@ -18,53 +20,84 @@ import tfg.Alta.Alta_Liga;
  */
 public class Ligas extends javax.swing.JPanel {
 
+    private class miTablaModel extends DefaultTableModel {
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    }
+
     /**
      * Creates new form Ligas
      */
     ArrayList datos = null;
-    
-    int id = -1;
-    String nombre = "";
-    String pais = "";
-    
+
+    int id;
+
     public Ligas() {
         initComponents();
         cargarTabla();
         estiloJLabel();
-        jButton_Eliminar.setEnabled(false);
+        estiloJTable();
+        estadoBotones();
     }
-    
-    public void cargarTabla(){
+
+    public void estiloJLabel() {
+        jLabel_Ligas.setFont(new Font("Segoe UI", Font.BOLD, 50));
+        jLabel_Ligas.setOpaque(true);
+    }
+
+    public void estiloJTable() {
+        JTableHeader header = jTable_Ligas.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        jTable_Ligas.setFillsViewportHeight(true); // para que el fondo se use en todo
+    }
+
+    public void estadoBotones() {
+        boolean habilitado = jTable_Ligas.getSelectedRow() != -1;
+        jButton_Modificar.setEnabled(habilitado);
+        jButton_Eliminar.setEnabled(habilitado);
+    }
+
+    public void cargarTabla() {
         String[] registro = null;
-        
-        DefaultTableModel dtm = new DefaultTableModel();
-        dtm.addColumn("ID");
+
+        miTablaModel dtm = new miTablaModel();
         dtm.addColumn("Nombre");
         dtm.addColumn("País");
-                
-        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga, nombre, pais\n" +
-        "FROM liga");
-        
-        if(datos != null){
+
+        datos = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga, nombre, pais\n"
+                + "FROM liga");
+
+        if (datos != null) {
             int n = datos.size();
-            for(int i = 0; i < n; i++){
+            for (int i = 0; i < n; i++) {
                 registro = (String[]) datos.get(i);
                 Object[] fila = new Object[]{
-                    registro[0],
                     registro[1],
                     registro[2]
                 };
-                dtm.addRow(fila); 
+                dtm.addRow(fila);
             }
         }
-        
+
         jTable_Ligas.setModel(dtm);
     }
-    
-    public void estiloJLabel(){
-        jLabel_Ligas.setFont(new Font("Verdana", 0, 50));
-        jLabel_Ligas.setOpaque(true);
-        jLabel_Ligas.setBackground(Color.yellow);
+
+    private void modificar() {
+        String[] registro = (String[]) datos.get(jTable_Ligas.getSelectedRow());
+        id = Integer.parseInt(registro[0]);
+        String nombre = registro[1];
+        String pais = registro[2];
+
+        Modificar_Liga ventana = new Modificar_Liga((JFrame) this.getRootPane().getParent(), true, id, nombre, pais);
+        ventana.setTitle("Modificar liga");
+        ventana.setSize(new Dimension(450, 200));
+        ventana.setLocationRelativeTo(null);
+        ventana.setModal(true);
+        ventana.setVisible(true);
+        cargarTabla();
     }
 
     /**
@@ -75,21 +108,35 @@ public class Ligas extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jLabel_Ligas = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Ligas = new javax.swing.JTable();
         jButton_Crear = new javax.swing.JButton();
         jButton_Eliminar = new javax.swing.JButton();
+        jButton_Modificar = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
 
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        setBackground(new java.awt.Color(255, 242, 255));
+        setLayout(new java.awt.GridBagLayout());
 
-        jLabel_Ligas.setBackground(new java.awt.Color(255, 255, 51));
-        jLabel_Ligas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel_Ligas.setBackground(new java.awt.Color(246, 220, 214));
+        jLabel_Ligas.setForeground(new java.awt.Color(156, 76, 44));
+        jLabel_Ligas.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel_Ligas.setText("Ligas");
+        jLabel_Ligas.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 16, 8, 0));
         jLabel_Ligas.setMaximumSize(new java.awt.Dimension(2300, 300));
-        add(jLabel_Ligas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 8, 8, 8);
+        add(jLabel_Ligas, gridBagConstraints);
 
+        jTable_Ligas.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jTable_Ligas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -101,14 +148,30 @@ public class Ligas extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable_Ligas.setRowHeight(24);
+        jTable_Ligas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable_Ligas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_LigasMouseClicked(evt);
             }
         });
+        jTable_Ligas.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTable_LigasPropertyChange(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable_Ligas);
 
-        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 16, 16);
+        add(jScrollPane1, gridBagConstraints);
 
         jButton_Crear.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Crear.setText("CREAR NUEVA");
@@ -117,7 +180,13 @@ public class Ligas extends javax.swing.JPanel {
                 jButton_CrearActionPerformed(evt);
             }
         });
-        add(jButton_Crear, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 490, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Crear, gridBagConstraints);
 
         jButton_Eliminar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Eliminar.setText("ELIMINAR");
@@ -126,13 +195,40 @@ public class Ligas extends javax.swing.JPanel {
                 jButton_EliminarActionPerformed(evt);
             }
         });
-        add(jButton_Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 490, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Eliminar, gridBagConstraints);
+
+        jButton_Modificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
+        jButton_Modificar.setText("MODIFICAR");
+        jButton_Modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_ModificarActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 16, 48, 0);
+        add(jButton_Modificar, gridBagConstraints);
+
+        jPanel1.setOpaque(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 3.0;
+        add(jPanel1, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
-        Alta_Liga ventana =  new Alta_Liga((JFrame) this.getRootPane().getParent(), true);
+        Alta_Liga ventana = new Alta_Liga((JFrame) this.getRootPane().getParent(), true);
         ventana.setTitle("Nueva liga");
-        ventana.setSize(new Dimension(500, 300));
+        ventana.setSize(new Dimension(450, 200));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
@@ -142,21 +238,45 @@ public class Ligas extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Ligas.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM liga WHERE idLiga = '" +id +"'");
-        cargarTabla();
+
+        ArrayList numeroCompeticiones = BaseDeDatos.getBD().ConsultaSQL("SELECT COUNT(*) FROM competicion WHERE idLiga=" + id);
+        registro = (String[]) numeroCompeticiones.get(0);
+        if (Integer.parseInt(registro[0]) > 0) {
+            JOptionPane.showMessageDialog(this, "No se puede borrar esta liga porque tiene competiciones activas.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int respuesta = JOptionPane.showOptionDialog(this, "¿Seguro que quiere eliminar esta liga?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"SÍ", "NO"}, "NO");
+        if (respuesta == 0) {
+            datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM liga WHERE idLiga=" + id);
+            cargarTabla();
+        }
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 
     private void jTable_LigasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_LigasMouseClicked
-        if(evt.getClickCount()==1){
-            jButton_Eliminar.setEnabled(true);
+        if (evt.getClickCount() == 1) {
+            estadoBotones();
+        }
+        if (evt.getClickCount() == 2) {
+            modificar();
         }
     }//GEN-LAST:event_jTable_LigasMouseClicked
+
+    private void jButton_ModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ModificarActionPerformed
+        modificar();
+    }//GEN-LAST:event_jButton_ModificarActionPerformed
+
+    private void jTable_LigasPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_LigasPropertyChange
+        estadoBotones();
+    }//GEN-LAST:event_jTable_LigasPropertyChange
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Crear;
     private javax.swing.JButton jButton_Eliminar;
+    private javax.swing.JButton jButton_Modificar;
     private javax.swing.JLabel jLabel_Ligas;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable_Ligas;
     // End of variables declaration//GEN-END:variables

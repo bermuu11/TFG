@@ -4,7 +4,9 @@
  */
 package tfg.Alta;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import tfg.BaseDeDatos;
 
 /**
@@ -13,14 +15,18 @@ import tfg.BaseDeDatos;
  */
 public class Alta_Liga extends javax.swing.JDialog {
 
-    private String nombre = "";
-    private String pais = "";
-    
-    ArrayList datos = null;
-    
     public Alta_Liga(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        getContentPane().setBackground(new Color(246, 220, 214));
+    }
+
+    private boolean hayError(String nombre, String campo) {
+        if (campo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El campo " + nombre + " es obligatorio.", "Error", JOptionPane.WARNING_MESSAGE);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -41,10 +47,17 @@ public class Alta_Liga extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        jLabel_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Nombre.setText("Nombre");
 
+        jLabel_Pais.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel_Pais.setText("País");
 
+        jTextField_Nombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTextField_Pais.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jButton_Anadir.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Anadir.setText("AÑADIR");
         jButton_Anadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -52,6 +65,7 @@ public class Alta_Liga extends javax.swing.JDialog {
             }
         });
 
+        jButton_Cancelar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
         jButton_Cancelar.setText("CANCELAR");
         jButton_Cancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -63,27 +77,28 @@ public class Alta_Liga extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(83, 83, 83)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Nombre))
-                .addGap(78, 78, 78)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField_Pais, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_Pais))
-                .addContainerGap(139, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_Cancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton_Anadir)
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel_Nombre)
+                            .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel_Pais)
+                            .addComponent(jTextField_Pais, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(220, Short.MAX_VALUE)
+                        .addComponent(jButton_Cancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton_Anadir)))
+                .addGap(27, 27, 27))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(100, 100, 100)
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel_Nombre)
                     .addComponent(jLabel_Pais))
@@ -91,21 +106,35 @@ public class Alta_Liga extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField_Pais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Anadir)
                     .addComponent(jButton_Cancelar))
-                .addContainerGap())
+                .addGap(30, 30, 30))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_AnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AnadirActionPerformed
-        nombre = jTextField_Nombre.getText();
-        pais = jTextField_Pais.getText();
-        BaseDeDatos.getBD().ConsultaSQL("INSERT INTO liga OVERRIDING SYSTEM VALUE VALUES (null, '" +nombre +"', '" +pais +"');");
-        this.setVisible(false);
+        String nombre = jTextField_Nombre.getText();
+        if (hayError("nombre", nombre)) {
+            return;
+        }
+
+        String pais = jTextField_Pais.getText();
+        if (hayError("país", pais)) {
+            return;
+        }
+
+        //Comprueba si la liga ya existe antes de añadirla
+        ArrayList consulta = BaseDeDatos.getBD().ConsultaSQL("SELECT idLiga FROM liga WHERE (nombre='" + nombre + "') AND (pais='" + pais + "')");
+        if (consulta.isEmpty()) {
+            BaseDeDatos.getBD().ConsultaSQL("INSERT INTO liga OVERRIDING SYSTEM VALUE VALUES (null, '" + nombre + "', '" + pais + "');");
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "La liga " + nombre + " de " + pais + " ya existe.", "Error", JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton_AnadirActionPerformed
 
     private void jButton_CancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelarActionPerformed

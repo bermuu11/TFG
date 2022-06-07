@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import tfg.Alta.Alta_Equipo;
@@ -53,8 +54,6 @@ public class Equipos extends javax.swing.JPanel {
     }
 
     public void cargarTabla() {
-        String[] registro = null;
-
         miTablaModel dtm = new miTablaModel();
         dtm.addColumn("Nombre");
         dtm.addColumn("Estadio");
@@ -69,7 +68,7 @@ public class Equipos extends javax.swing.JPanel {
         if (datos != null) {
             int n = datos.size();
             for (int i = 0; i < n; i++) {
-                registro = (String[]) datos.get(i);
+                String[] registro = (String[]) datos.get(i);
                 Object[] fila = new Object[]{
                     registro[1],
                     registro[2],
@@ -90,7 +89,6 @@ public class Equipos extends javax.swing.JPanel {
         id = Integer.parseInt(registro[0]);
 
         InfoModificar_Equipo ventana = new InfoModificar_Equipo((JFrame) this.getRootPane().getParent(), true, id);
-        ventana.setTitle("Información equipo");
         ventana.setSize(new Dimension(1000, 700));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
@@ -146,6 +144,7 @@ public class Equipos extends javax.swing.JPanel {
             }
         ));
         jTable_Equipos.setRowHeight(24);
+        jTable_Equipos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable_Equipos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable_EquiposMouseClicked(evt);
@@ -185,7 +184,7 @@ public class Equipos extends javax.swing.JPanel {
         add(jButton_Crear, gridBagConstraints);
 
         jButton_InfoModificar.setFont(new java.awt.Font("Microsoft JhengHei", 1, 14)); // NOI18N
-        jButton_InfoModificar.setText("INFO/MODIFICAR");
+        jButton_InfoModificar.setText("CONSULTAR / MODIFICAR");
         jButton_InfoModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_InfoModificarActionPerformed(evt);
@@ -216,7 +215,7 @@ public class Equipos extends javax.swing.JPanel {
     private void jButton_CrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CrearActionPerformed
         Alta_Equipo ventana = new Alta_Equipo((JFrame) this.getRootPane().getParent(), true);
         ventana.setTitle("Nuevo equipo");
-        ventana.setSize(new Dimension(700, 500));
+        ventana.setSize(new Dimension(450, 350));
         ventana.setLocationRelativeTo(null);
         ventana.setModal(true);
         ventana.setVisible(true);
@@ -239,8 +238,24 @@ public class Equipos extends javax.swing.JPanel {
     private void jButton_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EliminarActionPerformed
         String[] registro = (String[]) datos.get(jTable_Equipos.getSelectedRow());
         id = Integer.parseInt(registro[0]);
-        datos = BaseDeDatos.getBD().ConsultaSQL("DELETE FROM equipo WHERE idEquipo = '" + id + "'");
-        cargarTabla();
+
+        ArrayList numeroCompeticiones = BaseDeDatos.getBD().ConsultaSQL("SELECT COUNT(*) FROM compite WHERE idEquipo=" + id);
+        registro = (String[]) numeroCompeticiones.get(0);
+        if (Integer.parseInt(registro[0]) > 0) {
+            JOptionPane.showMessageDialog(this, "No se puede borrar este equipo porque pertenece a alguna competición.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int respuesta = JOptionPane.showOptionDialog(this, "¿Seguro que quiere eliminar este equipo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"SÍ", "NO"}, "NO");
+        if (respuesta == 0) {
+            //Se borra la pertencia de los jugadores de todos los equipos de la competición
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM pertenece WHERE idEquipo = " + id);
+            //Se borra la clasificación de todos los equipos de la competición
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM clasifica WHERE idEquipo = " + id);
+            //Se borra el equipo
+            BaseDeDatos.getBD().ConsultaSQL("DELETE FROM equipo WHERE idEquipo = " + id);
+            cargarTabla();
+        }
     }//GEN-LAST:event_jButton_EliminarActionPerformed
 
     private void jTable_EquiposPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_EquiposPropertyChange
